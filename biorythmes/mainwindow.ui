@@ -245,6 +245,9 @@
           <property name="text">
            <string>&lt;</string>
           </property>
+          <property name="shortcut">
+           <string>Left</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -264,6 +267,9 @@
           <property name="text">
            <string>&gt;</string>
           </property>
+          <property name="shortcut">
+           <string>Right</string>
+          </property>
          </widget>
         </item>
        </layout>
@@ -278,7 +284,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>17</height>
+     <height>25</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">

@@ -55,7 +55,8 @@ void MainWindow::on_buildGraphic_clicked()
     ui->intellBiorythm->setText(inc);
 
     paintel->firstLaunch = true;
-
+    ui->birthdayLineEdit->clearFocus();
+    ui->currDayLineEdit->clearFocus();
     paintel->update();
 }
 
@@ -196,16 +197,16 @@ void MainWindow::on_setCurrDate_triggered()
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    ui->currDayLineEdit->clear();
     currDate.addDays(1);
+    ui->currDayLineEdit->setText(currDate.outputDate());
     updateInfoF();
 }
 
 
 void MainWindow::on_pushButton_clicked()
 {
-    ui->currDayLineEdit->clear();
     currDate.addDays(-1);
+     ui->currDayLineEdit->setText(currDate.outputDate());
     updateInfoF();
 }
 
