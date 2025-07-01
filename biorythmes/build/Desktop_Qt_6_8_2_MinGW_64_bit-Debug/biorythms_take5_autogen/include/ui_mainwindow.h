@@ -278,7 +278,7 @@ public:
         MainWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(MainWindow);
         menubar->setObjectName("menubar");
-        menubar->setGeometry(QRect(0, 0, 800, 25));
+        menubar->setGeometry(QRect(0, 0, 800, 17));
         menu = new QMenu(menubar);
         menu->setObjectName("menu");
         menu_2 = new QMenu(menubar);
@@ -325,6 +325,8 @@ public:
         menu_4->addAction(action_8);
 
         retranslateUi(MainWindow);
+        QObject::connect(currDayLineEdit, &QLineEdit::returnPressed, buildGraphic, qOverload<>(&QPushButton::click));
+        QObject::connect(birthdayLineEdit, &QLineEdit::returnPressed, buildGraphic, qOverload<>(&QPushButton::click));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
