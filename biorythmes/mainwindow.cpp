@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
     ui->gridLayout->addWidget(paintel, 0, 0);
-    this->setWindowTitle("БИОРИТМЫ");
+    this->setWindowTitle("БИОРИТМЫ | HHCrewgroupTSS");
     ui->physBiorythmName->setStyleSheet("color: rgb(255, 0, 0)");
     ui->psychoBiorythmName->setStyleSheet("color: rgb(0, 0, 255)");
     ui->intellBiorythmName->setStyleSheet("color: rgb(0, 255, 0)");
@@ -32,6 +32,10 @@ MainWindow::~MainWindow()
 void MainWindow::on_buildGraphic_clicked()
 {
     birth.inputDate(ui->birthdayLineEdit->text());
+    if (ui->currDayLineEdit->text().isEmpty()){
+        currDate.setCurrentDate();
+        ui->currDayLineEdit->setText(currDate.outputDate());
+    }
     currDate.inputDate(ui->currDayLineEdit->text());
     ui->birthdayLabel->setText(birth.outputDate());
     ui->currDayLabel->setText(currDate.outputDate());
