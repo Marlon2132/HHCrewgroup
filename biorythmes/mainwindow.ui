@@ -278,7 +278,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>17</height>
     </rect>
    </property>
    <widget class="QMenu" name="menu">
@@ -521,5 +521,38 @@
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>currDayLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>buildGraphic</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>152</x>
+     <y>120</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>722</x>
+     <y>78</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>birthdayLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>buildGraphic</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>152</x>
+     <y>63</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>722</x>
+     <y>78</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
