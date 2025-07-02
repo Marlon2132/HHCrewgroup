@@ -32,11 +32,17 @@ MainWindow::~MainWindow()
 void MainWindow::on_buildGraphic_clicked()
 {
     birth.inputDate(ui->birthdayLineEdit->text());
+    if (!birth.checkDate()){
+        // Здесь месседж бокс для даты рождения и прекращение построения графика
+    }
     if (ui->currDayLineEdit->text().isEmpty()){
         currDate.setCurrentDate();
         ui->currDayLineEdit->setText(currDate.outputDate());
     }
     currDate.inputDate(ui->currDayLineEdit->text());
+    if (!currDate.checkDate()){
+        // Здесь месседж бокс для даты рождения и прекращение построения графика
+    }
     ui->birthdayLabel->setText(birth.outputDate());
     ui->currDayLabel->setText(currDate.outputDate());
     paintel->getDates(currDate, birth);

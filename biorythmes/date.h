@@ -23,7 +23,7 @@ public:
     void setDate(int d, int m, int y);                                // изменить дату
     bool isLeapYear() const;                                          // если год в данной дате високосный, возвращает true, иначе false
     void changeFormat(int x = 1);                                     // для определения формата ввода-вывода даты
-    bool checkDate(int d, int m, int y) const;                        // проверяет правильность даты
+    bool checkDate() const;                        // проверяет правильность даты
 
     void setCurrentDate();                                            // присваивает объекту Date текущую дату
     Date currentDate() const ;                                        // возвращает текущую дату
