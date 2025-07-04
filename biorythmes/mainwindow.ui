@@ -245,6 +245,9 @@
           <property name="text">
            <string>&lt;</string>
           </property>
+          <property name="shortcut">
+           <string>Left</string>
+          </property>
          </widget>
         </item>
         <item>
@@ -263,6 +266,9 @@
           </property>
           <property name="text">
            <string>&gt;</string>
+          </property>
+          <property name="shortcut">
+           <string>Right</string>
           </property>
          </widget>
         </item>
@@ -521,5 +527,38 @@
   </action>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>currDayLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>buildGraphic</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>152</x>
+     <y>120</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>722</x>
+     <y>78</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>birthdayLineEdit</sender>
+   <signal>returnPressed()</signal>
+   <receiver>buildGraphic</receiver>
+   <slot>click()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>152</x>
+     <y>63</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>722</x>
+     <y>78</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

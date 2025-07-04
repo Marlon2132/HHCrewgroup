@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
     ui->gridLayout->addWidget(paintel, 0, 0);
-    this->setWindowTitle("БИОРИТМЫ");
+    this->setWindowTitle("БИОРИТМЫ | HHCrewgroupTSS");
     ui->physBiorythmName->setStyleSheet("color: rgb(255, 0, 0)");
     ui->psychoBiorythmName->setStyleSheet("color: rgb(0, 0, 255)");
     ui->intellBiorythmName->setStyleSheet("color: rgb(0, 255, 0)");
@@ -32,7 +32,17 @@ MainWindow::~MainWindow()
 void MainWindow::on_buildGraphic_clicked()
 {
     birth.inputDate(ui->birthdayLineEdit->text());
+    if (!birth.checkDate()){
+        // Здесь месседж бокс для даты рождения и прекращение построения графика
+    }
+    if (ui->currDayLineEdit->text().isEmpty()){
+        currDate.setCurrentDate();
+        ui->currDayLineEdit->setText(currDate.outputDate());
+    }
     currDate.inputDate(ui->currDayLineEdit->text());
+    if (!currDate.checkDate()){
+        // Здесь месседж бокс для даты рождения и прекращение построения графика
+    }
     ui->birthdayLabel->setText(birth.outputDate());
     ui->currDayLabel->setText(currDate.outputDate());
     paintel->getDates(currDate, birth);
@@ -51,7 +61,8 @@ void MainWindow::on_buildGraphic_clicked()
     ui->intellBiorythm->setText(inc);
 
     paintel->firstLaunch = true;
-
+    ui->birthdayLineEdit->clearFocus();
+    ui->currDayLineEdit->clearFocus();
     paintel->update();
 }
 
@@ -192,16 +203,16 @@ void MainWindow::on_setCurrDate_triggered()
 
 void MainWindow::on_pushButton_2_clicked()
 {
-    ui->currDayLineEdit->clear();
     currDate.addDays(1);
+    ui->currDayLineEdit->setText(currDate.outputDate());
     updateInfoF();
 }
 
 
 void MainWindow::on_pushButton_clicked()
 {
-    ui->currDayLineEdit->clear();
     currDate.addDays(-1);
+     ui->currDayLineEdit->setText(currDate.outputDate());
     updateInfoF();
 }
 

@@ -14,14 +14,14 @@ bool Date::isLeapYear(int y) const {
 
 int Date::daysInMonth(int m) const {
     static QList<int> days = {31,28,31,30,31,30,31,31,30,31,30,31};
-    if (m == 2 && isLeapYear()) return 29;
+    if (m == 2 && isLeapYear())
+        return 29;
     return days[m-1];
 }
 
-bool Date::checkDate(int d, int m, int y) const {
-    if (y == 0) return 0;
-    if (m < 1 || m > 12) return 0;
-    if (d < 1 || d > daysInMonth(m)) return 0;
+bool Date::checkDate() const {
+    if (this->year == 0 || this->month < 1 || this->month > 12 || this->day < 1 || this->day > daysInMonth(month))
+        return 0;
     return 1;
 }
 
