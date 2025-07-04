@@ -10,18 +10,23 @@
 #include <QNetworkInterface>
 #include <QScrollBar>
 #include <QNetworkAddressEntry>
+#include <QNetworkRequest>
+#include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), animation(nullptr)
+    : QMainWindow(parent), animation(nullptr), publicIp(""), animationTimer(nullptr)
 {
     setupUI();
     server = new QTcpServer(this);
     connect(server, &QTcpServer::newConnection, this, &MainWindow::newConnection);
+    networkManager = new QNetworkAccessManager(this);
 }
 
 MainWindow::~MainWindow()
 {
+    if (animationTimer) delete animationTimer;
     if (animation) delete animation;
+    server->close();
 }
 
 void MainWindow::setupUI()
@@ -120,7 +125,7 @@ void MainWindow::updateIpList()
     QString mainIp = getMainIpAddress();
 
     // Обновляем метку с вашим IP
-    yourIpLabel->setText("Clients should connect to: " + mainIp + ":12345");
+    yourIpLabel->setText("Local IP: " + mainIp + ":12345");
 
     // Добавляем localhost
     ipListWidget->addItem("127.0.0.1 (localhost)");
@@ -137,6 +142,12 @@ void MainWindow::updateIpList()
         }
     }
 
+    // Добавляем публичный IP, если он доступен
+    if (!publicIp.isEmpty()) {
+        ipListWidget->addItem("Public IP: " + publicIp);
+        ipListWidget->addItem("Note: For external networks, configure port forwarding on your router");
+    }
+
     // Выделяем основной IP в списке
     for (int i = 0; i < ipListWidget->count(); ++i) {
         if (ipListWidget->item(i)->text().contains(mainIp)) {
@@ -144,6 +155,27 @@ void MainWindow::updateIpList()
             break;
         }
     }
+}
+
+void MainWindow::fetchPublicIp()
+{
+    QNetworkReply *reply = networkManager->get(QNetworkRequest(QUrl("http://api.ipify.org")));
+    connect(reply, &QNetworkReply::finished, this, [this, reply]() {
+        handlePublicIpReply(reply);
+    });
+}
+
+void MainWindow::handlePublicIpReply(QNetworkReply *reply)
+{
+    if (reply->error() == QNetworkReply::NoError) {
+        publicIp = QString::fromUtf8(reply->readAll()).trimmed();
+        logText->append("[" + QDateTime::currentDateTime().toString() + "] Public IP: " + publicIp);
+        logText->append("[" + QDateTime::currentDateTime().toString() + "] For external access, configure port forwarding on your router");
+        updateIpList();
+    } else {
+        logText->append("[" + QDateTime::currentDateTime().toString() + "] Failed to get public IP: " + reply->errorString());
+    }
+    reply->deleteLater();
 }
 
 void MainWindow::startServer()
@@ -156,10 +188,13 @@ void MainWindow::startServer()
     if (server->listen(QHostAddress::Any, 12345)) {
         logText->append("[" + QDateTime::currentDateTime().toString() + "] Server started on port 12345");
         logText->append("[" + QDateTime::currentDateTime().toString() + "] Waiting for connections...");
-        logText->append("[" + QDateTime::currentDateTime().toString() + "] Clients should connect to: " + getMainIpAddress());
+        logText->append("[" + QDateTime::currentDateTime().toString() + "] Local IP: " + getMainIpAddress());
 
         // Обновляем список IP
         updateIpList();
+
+        // Получаем публичный IP
+        fetchPublicIp();
 
         // Прокручиваем лог вниз
         QScrollBar *sb = logText->verticalScrollBar();
@@ -176,8 +211,8 @@ void MainWindow::newConnection()
     connect(clientSocket, &QTcpSocket::readyRead, this, &MainWindow::readClientData);
     connect(clientSocket, &QTcpSocket::disconnected, clientSocket, &QTcpSocket::deleteLater);
 
-    logText->append("[" + QDateTime::currentDateTime().toString() + "] New client: " +
-                    clientSocket->peerAddress().toString());
+    QString clientInfo = clientSocket->peerAddress().toString() + ":" + QString::number(clientSocket->peerPort());
+    logText->append("[" + QDateTime::currentDateTime().toString() + "] New client: " + clientInfo);
 
     // Прокручиваем лог вниз
     QScrollBar *sb = logText->verticalScrollBar();
@@ -222,37 +257,82 @@ void MainWindow::readClientData()
 void MainWindow::startDancingImage(const QString& surname)
 {
     // Остановка предыдущей анимации
+    if (animationTimer) {
+        animationTimer->stop();
+        delete animationTimer;
+        animationTimer = nullptr;
+    }
+
     if (animation) {
-        animation->stop();
         delete animation;
         animation = nullptr;
     }
 
-    // Пробуем загрузить изображение студента
-    QString imagePath = QDir::currentPath() + "/Studentiki/" + surname + ".jpg";
+    // Загрузка изображения
+    QString imagePath = ":photos/" + surname + ".jpg";
     QPixmap studentImage(imagePath);
+
     if (!studentImage.isNull()) {
-        imageLabel->setPixmap(studentImage.scaled(150, 150, Qt::KeepAspectRatio));
+        imageLabel->setPixmap(studentImage.scaled(150, 150, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        imageLabel->setStyleSheet("background: transparent; border: none;");
     } else {
-        // Если изображения нет, выводим текст
         imageLabel->setText("Student: " + surname);
+        imageLabel->setStyleSheet("font-weight: bold; color: navy; background: transparent; border: none;");
     }
+
     imageLabel->adjustSize();
     imageLabel->show();
 
-    // Создание анимации
-    animation = new QPropertyAnimation(imageLabel, "pos", this);
-    animation->setDuration(2000);
-    animation->setLoopCount(-1);
+    // Инициализация переменных для плавной анимации
+    currentPosition = imageLabel->pos();
+    velocity = QPointF(2.0 + QRandomGenerator::global()->bounded(3.0),
+                       2.0 + QRandomGenerator::global()->bounded(3.0));
 
-    // Генерация случайных позиций
+    // Создаем таймер для плавной анимации
+    animationTimer = new QTimer(this);
+    connect(animationTimer, &QTimer::timeout, this, &MainWindow::updateAnimation);
+    animationTimer->start(16); // ~60 FPS
+}
+
+// Новый метод для обновления анимации
+void MainWindow::updateAnimation()
+{
+    if (!imageLabel->isVisible()) return;
+
     QRect geo = this->geometry();
-    int steps = 5;
-    for (int i = 0; i <= steps; ++i) {
-        int x = QRandomGenerator::global()->bounded(geo.width() - imageLabel->width());
-        int y = QRandomGenerator::global()->bounded(geo.height() - imageLabel->height());
-        animation->setKeyValueAt(static_cast<double>(i)/steps, QPoint(x, y));
+    QRect labelRect = imageLabel->geometry();
+
+    // Обновляем позицию
+    currentPosition += velocity;
+
+    // Проверка столкновений с границами
+    if (currentPosition.x() <= 0 ||
+        currentPosition.x() >= geo.width() - labelRect.width()) {
+        velocity.setX(-velocity.x() * 0.95); // Отскок с небольшим демпфированием
     }
 
-    animation->start();
+    if (currentPosition.y() <= 0 ||
+        currentPosition.y() >= geo.height() - labelRect.height()) {
+        velocity.setY(-velocity.y() * 0.95); // Отскок с небольшим демпфированием
+    }
+
+    // Добавляем небольшое случайное изменение направления
+    if (QRandomGenerator::global()->bounded(100) < 5) {
+        velocity += QPointF(
+            QRandomGenerator::global()->bounded(0.5) - 0.25,
+            QRandomGenerator::global()->bounded(0.5) - 0.25
+            );
+    }
+
+    // Ограничиваем максимальную скорость
+    float speed = std::sqrt(velocity.x()*velocity.x() + velocity.y()*velocity.y());
+    if (speed > 5.0) {
+        velocity = velocity * (5.0 / speed);
+    }
+
+    // Применяем новую позицию
+    imageLabel->move(currentPosition.toPoint());
+
+    // Небольшая гравитация (опционально)
+    velocity.setY(velocity.y() + 0.05);
 }

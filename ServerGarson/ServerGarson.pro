@@ -13,3 +13,6 @@ HEADERS += \
 # Настройки
 CONFIG += c++11
 CONFIG += release
+
+RESOURCES += \
+    Students.qrc
