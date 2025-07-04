@@ -325,6 +325,8 @@ public:
         menu_4->addAction(action_8);
 
         retranslateUi(MainWindow);
+        QObject::connect(currDayLineEdit, &QLineEdit::returnPressed, buildGraphic, qOverload<>(&QPushButton::click));
+        QObject::connect(birthdayLineEdit, &QLineEdit::returnPressed, buildGraphic, qOverload<>(&QPushButton::click));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -367,7 +369,13 @@ public:
         buildGraphic->setText(QCoreApplication::translate("MainWindow", "\320\237\320\276\321\201\321\202\321\200\320\276\320\270\321\202\321\214 \320\263\321\200\320\260\321\204\320\270\320\272", nullptr));
         intellBiorythm->setText(QString());
         pushButton->setText(QCoreApplication::translate("MainWindow", "<", nullptr));
+#if QT_CONFIG(shortcut)
+        pushButton->setShortcut(QCoreApplication::translate("MainWindow", "Left", nullptr));
+#endif // QT_CONFIG(shortcut)
         pushButton_2->setText(QCoreApplication::translate("MainWindow", ">", nullptr));
+#if QT_CONFIG(shortcut)
+        pushButton_2->setShortcut(QCoreApplication::translate("MainWindow", "Right", nullptr));
+#endif // QT_CONFIG(shortcut)
         menu->setTitle(QCoreApplication::translate("MainWindow", "\320\234\320\265\320\275\321\216", nullptr));
         menu_2->setTitle(QCoreApplication::translate("MainWindow", "\320\244\320\276\321\200\320\274\320\260\321\202 \320\262\320\262\320\276\320\264\320\260-\320\262\321\213\320\262\320\276\320\264\320\260", nullptr));
         menu_3->setTitle(QCoreApplication::translate("MainWindow", "\320\237\320\276\320\272\320\260\320\267\320\260\321\202\321\214 \320\261\320\270\320\276\321\200\320\270\321\202\320\274\321\213", nullptr));
