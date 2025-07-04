@@ -1,3 +1,4 @@
+// mainwindow.h
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -6,13 +7,13 @@
 #include <QTcpSocket>
 #include <QTextEdit>
 #include <QLabel>
-#include <QPropertyAnimation>
 #include <QRegularExpression>
 #include <QPushButton>
 #include <QListWidget>
 #include <QNetworkInterface>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QTimer> // Добавлен таймер
 
 class MainWindow : public QMainWindow
 {
@@ -27,24 +28,25 @@ private slots:
     void newConnection();
     void readClientData();
     void handlePublicIpReply(QNetworkReply *reply);
- void updateAnimation();
+    void moveImageRandomly(); // Добавлен слот для перемещения
+
 private:
     void setupUI();
     void updateIpList();
     QString getMainIpAddress();
     void startDancingImage(const QString& surname);
     void fetchPublicIp();
-    QTimer *animationTimer; // Таймер для анимации
-    QPointF currentPosition; // Текущая позиция
-    QPointF velocity;
+    void stopDancing(); // Добавлена функция остановки
+
     QTcpServer *server;
     QTextEdit *logText;
     QLabel *imageLabel;
-    QPropertyAnimation *animation;
     QListWidget *ipListWidget;
     QLabel *yourIpLabel;
     QNetworkAccessManager *networkManager;
     QString publicIp;
+    QTimer *danceTimer; // Таймер для анимации
+    QString currentSurname; // Текущая фамилия
 };
 
 #endif // MAINWINDOW_H

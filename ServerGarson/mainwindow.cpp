@@ -14,19 +14,24 @@
 #include <QTimer>
 
 MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent), animation(nullptr), publicIp(""), animationTimer(nullptr)
+    : QMainWindow(parent),
+    publicIp(""),
+    danceTimer(new QTimer(this))
 {
     setupUI();
     server = new QTcpServer(this);
     connect(server, &QTcpServer::newConnection, this, &MainWindow::newConnection);
     networkManager = new QNetworkAccessManager(this);
+
+    // Настройка таймера для плавной анимации
+    danceTimer->setInterval(40); // Обновление каждые 200 мс
+    connect(danceTimer, &QTimer::timeout, this, &MainWindow::moveImageRandomly);
 }
 
 MainWindow::~MainWindow()
 {
-    if (animationTimer) delete animationTimer;
-    if (animation) delete animation;
     server->close();
+    danceTimer->stop();
 }
 
 void MainWindow::setupUI()
@@ -59,6 +64,7 @@ void MainWindow::setupUI()
     imageLabel->hide();
     imageLabel->setMinimumSize(150, 150);
     imageLabel->setFrameShape(QFrame::Box);
+    imageLabel->setStyleSheet("background: transparent; border: 1px solid #ccc;");
 
     // Добавляем элементы
     layout->addWidget(startButton);
@@ -257,18 +263,10 @@ void MainWindow::readClientData()
 void MainWindow::startDancingImage(const QString& surname)
 {
     // Остановка предыдущей анимации
-    if (animationTimer) {
-        animationTimer->stop();
-        delete animationTimer;
-        animationTimer = nullptr;
-    }
+    danceTimer->stop();
+    imageLabel->hide();
 
-    if (animation) {
-        delete animation;
-        animation = nullptr;
-    }
-
-    // Загрузка изображения
+    // Загрузка изображения/текста
     QString imagePath = ":photos/" + surname + ".jpg";
     QPixmap studentImage(imagePath);
 
@@ -277,62 +275,42 @@ void MainWindow::startDancingImage(const QString& surname)
         imageLabel->setStyleSheet("background: transparent; border: none;");
     } else {
         imageLabel->setText("Student: " + surname);
-        imageLabel->setStyleSheet("font-weight: bold; color: navy; background: transparent; border: none;");
+        imageLabel->setStyleSheet("background: transparent; border: none; color: black; font-weight: bold;");
     }
 
     imageLabel->adjustSize();
+
+    // Начальная позиция - центр окна
+    QRect geo = this->geometry();
+    int x = (geo.width() - imageLabel->width()) / 2;
+    int y = (geo.height() - imageLabel->height()) / 2;
+    imageLabel->move(x, y);
+
     imageLabel->show();
 
-    // Инициализация переменных для плавной анимации
-    currentPosition = imageLabel->pos();
-    velocity = QPointF(2.0 + QRandomGenerator::global()->bounded(3.0),
-                       2.0 + QRandomGenerator::global()->bounded(3.0));
-
-    // Создаем таймер для плавной анимации
-    animationTimer = new QTimer(this);
-    connect(animationTimer, &QTimer::timeout, this, &MainWindow::updateAnimation);
-    animationTimer->start(16); // ~60 FPS
+    // Запускаем анимацию
+    danceTimer->start();
 }
 
-// Новый метод для обновления анимации
-void MainWindow::updateAnimation()
+void MainWindow::moveImageRandomly()
 {
     if (!imageLabel->isVisible()) return;
 
+    // Текущая позиция метки
+    QPoint currentPos = imageLabel->pos();
+
+    // Генерация случайного смещения (в радиусе 5-10 пикселей)
+    int offsetX = QRandomGenerator::global()->bounded(-5, 5);
+    int offsetY = QRandomGenerator::global()->bounded(-5, 5);
+
+    // Вычисляем новую позицию
+    QPoint newPos = currentPos + QPoint(offsetX, offsetY);
+
+    // Гарантируем, что метка останется в пределах окна
     QRect geo = this->geometry();
-    QRect labelRect = imageLabel->geometry();
+    newPos.setX(qBound(0, newPos.x(), geo.width() - imageLabel->width()));
+    newPos.setY(qBound(0, newPos.y(), geo.height() - imageLabel->height()));
 
-    // Обновляем позицию
-    currentPosition += velocity;
-
-    // Проверка столкновений с границами
-    if (currentPosition.x() <= 0 ||
-        currentPosition.x() >= geo.width() - labelRect.width()) {
-        velocity.setX(-velocity.x() * 0.95); // Отскок с небольшим демпфированием
-    }
-
-    if (currentPosition.y() <= 0 ||
-        currentPosition.y() >= geo.height() - labelRect.height()) {
-        velocity.setY(-velocity.y() * 0.95); // Отскок с небольшим демпфированием
-    }
-
-    // Добавляем небольшое случайное изменение направления
-    if (QRandomGenerator::global()->bounded(100) < 5) {
-        velocity += QPointF(
-            QRandomGenerator::global()->bounded(0.5) - 0.25,
-            QRandomGenerator::global()->bounded(0.5) - 0.25
-            );
-    }
-
-    // Ограничиваем максимальную скорость
-    float speed = std::sqrt(velocity.x()*velocity.x() + velocity.y()*velocity.y());
-    if (speed > 5.0) {
-        velocity = velocity * (5.0 / speed);
-    }
-
-    // Применяем новую позицию
-    imageLabel->move(currentPosition.toPoint());
-
-    // Небольшая гравитация (опционально)
-    velocity.setY(velocity.y() + 0.05);
+    // Плавное перемещение
+    imageLabel->move(newPos);
 }

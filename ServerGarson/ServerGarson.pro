@@ -1,6 +1,6 @@
 QT += core gui network widgets
 
-TARGET = server-app
+TARGET = garson-server
 TEMPLATE = app
 
 SOURCES += \
@@ -10,9 +10,7 @@ SOURCES += \
 HEADERS += \
     mainwindow.h
 
-# Настройки
+RESOURCES += Students.qrc
+
 CONFIG += c++11
 CONFIG += release
-
-RESOURCES += \
-    Students.qrc
