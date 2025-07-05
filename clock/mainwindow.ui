@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget"/>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>17</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="file_menu">
+    <property name="title">
+     <string>Файл</string>
+    </property>
+    <addaction name="open_clock_action"/>
+   </widget>
+   <widget class="QMenu" name="main_menu">
+    <property name="title">
+     <string>Главная</string>
+    </property>
+    <widget class="QMenu" name="design_menu">
+     <property name="title">
+      <string>Дизайн</string>
+     </property>
+     <widget class="QMenu" name="background_menu">
+      <property name="title">
+       <string>Фон</string>
+      </property>
+      <addaction name="action_3"/>
+     </widget>
+     <widget class="QMenu" name="arrow_menu">
+      <property name="title">
+       <string>Стиль стрелок</string>
+      </property>
+      <addaction name="action_1"/>
+     </widget>
+     <addaction name="background_menu"/>
+     <addaction name="arrow_menu"/>
+    </widget>
+    <widget class="QMenu" name="music_menu">
+     <property name="title">
+      <string>Музыка</string>
+     </property>
+     <addaction name="action_6"/>
+    </widget>
+    <addaction name="design_menu"/>
+    <addaction name="music_menu"/>
+   </widget>
+   <widget class="QMenu" name="stats_menu">
+    <property name="title">
+     <string>Статистика</string>
+    </property>
+    <addaction name="open_stats_action"/>
+   </widget>
+   <widget class="QMenu" name="format_menu">
+    <property name="title">
+     <string>Формат</string>
+    </property>
+    <widget class="QMenu" name="number_format_menu">
+     <property name="title">
+      <string>Числовой</string>
+     </property>
+     <addaction name="from_timer_action"/>
+     <addaction name="manually_action"/>
+    </widget>
+    <addaction name="number_format_menu"/>
+    <addaction name="wordly_action"/>
+   </widget>
+   <widget class="QMenu" name="help_menu">
+    <property name="title">
+     <string>Помощь</string>
+    </property>
+    <addaction name="open_help_action"/>
+   </widget>
+   <addaction name="file_menu"/>
+   <addaction name="main_menu"/>
+   <addaction name="stats_menu"/>
+   <addaction name="format_menu"/>
+   <addaction name="help_menu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="action_3">
+   <property name="text">
+    <string>Меняющийся</string>
+   </property>
+  </action>
+  <action name="action_1">
+   <property name="text">
+    <string>Стрелка 1</string>
+   </property>
+  </action>
+  <action name="action_6">
+   <property name="text">
+    <string>Музыка 1</string>
+   </property>
+  </action>
+  <action name="open_stats_action">
+   <property name="text">
+    <string>Открыть статистику</string>
+   </property>
+  </action>
+  <action name="from_timer_action">
+   <property name="text">
+    <string>Из таймера</string>
+   </property>
+  </action>
+  <action name="manually_action">
+   <property name="text">
+    <string>Вручную</string>
+   </property>
+  </action>
+  <action name="wordly_action">
+   <property name="text">
+    <string>Словесный</string>
+   </property>
+  </action>
+  <action name="open_clock_action">
+   <property name="text">
+    <string>Открыть часы</string>
+   </property>
+  </action>
+  <action name="open_help_action">
+   <property name="text">
+    <string>Открыть помощь</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
