@@ -28,7 +28,7 @@ void MainWindow::setupUI()
     QVBoxLayout *mainLayout = new QVBoxLayout(centralWidget);
 
     // Поля ввода
-    ipEdit = new QLineEdit("217.21.43.190", this);
+    ipEdit = new QLineEdit("127.0.0.1", this);
     messageEdit = new QLineEdit(this);
     messageEdit->setPlaceholderText("Enter your surname for the message");
 
