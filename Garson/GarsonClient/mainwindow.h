@@ -3,17 +3,19 @@
 
 #include <QMainWindow>
 #include <QTcpSocket>
-#include <QLabel>
 
 class QLineEdit;
-class QPushButton;
 class QTextEdit;
+class QLabel;
+class QPushButton;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
+
 public:
     explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
 
 private slots:
     void connectToServer();
@@ -25,14 +27,16 @@ private slots:
 private:
     void setupUI();
     void showGardenImage();
+    QString extractSurname(const QString &message);
 
     QTcpSocket *tcpSocket;
     QLineEdit *ipEdit;
     QLineEdit *messageEdit;
-    QPushButton *connectButton;
-    QPushButton *sendButton;
     QTextEdit *logText;
     QLabel *imageLabel;
+    QPushButton *connectButton;
+    QPushButton *sendButton;
+    QString surnameForImage;
 };
 
 #endif // MAINWINDOW_H
