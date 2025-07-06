@@ -11,3 +11,6 @@ HEADERS += \
     mainwindow.h
 
 CONFIG += c++11
+
+RESOURCES += \
+    SleepingStudents.qrc

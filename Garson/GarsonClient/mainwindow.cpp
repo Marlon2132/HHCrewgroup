@@ -10,6 +10,8 @@
 #include <QPixmap>
 #include <QDir>
 #include <QPainter>
+#include <QFont>
+#include <QRegularExpression>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -22,6 +24,34 @@ MainWindow::MainWindow(QWidget *parent)
     connect(tcpSocket, &QTcpSocket::connected, this, &MainWindow::onConnected);
 }
 
+MainWindow::~MainWindow()
+{
+}
+
+QString MainWindow::extractSurname(const QString &message)
+{
+    // Регулярное выражение для поиска фамилии после "I'm" или "I am"
+    QRegularExpression re("I('m|\\s+am)\\s+([^!,.]+)", QRegularExpression::CaseInsensitiveOption);
+    QRegularExpressionMatch match = re.match(message);
+
+    if (match.hasMatch()) {
+        return match.captured(2).trimmed();
+    }
+
+    // Если шаблон не найден, берем последнее слово
+    QStringList parts = message.split(' ', Qt::SkipEmptyParts);
+    if (!parts.isEmpty()) {
+        QString lastWord = parts.last();
+        // Удаляем возможные знаки препинания
+        if (lastWord.endsWith('!') || lastWord.endsWith(',') || lastWord.endsWith('.')) {
+            lastWord.chop(1);
+        }
+        return lastWord;
+    }
+
+    return "Unknown";
+}
+
 void MainWindow::setupUI()
 {
     QWidget *centralWidget = new QWidget(this);
@@ -30,7 +60,7 @@ void MainWindow::setupUI()
     // Поля ввода
     ipEdit = new QLineEdit("127.0.0.1", this);
     messageEdit = new QLineEdit(this);
-    messageEdit->setPlaceholderText("Enter your surname for the message");
+    messageEdit->setPlaceholderText("Enter your full message (e.g. Hello, Garson, I'm Ivanov!)");
 
     // Кнопки
     connectButton = new QPushButton("Connect to Server", this);
@@ -100,14 +130,15 @@ void MainWindow::sendMessage()
         return;
     }
 
-    QString surname = messageEdit->text().trimmed();
-    if (surname.isEmpty()) {
-        logText->append("[" + QDateTime::currentDateTime().toString() + "] Surname is empty!");
+    QString message = messageEdit->text().trimmed();
+    if (message.isEmpty()) {
+        logText->append("[" + QDateTime::currentDateTime().toString() + "] Message is empty!");
         return;
     }
 
-    // Формируем сообщение
-    QString message = "Hello, Garson, I'm " + surname + "!";
+    // Извлекаем фамилию для возможного отображения изображения
+    surnameForImage = extractSurname(message);
+
     tcpSocket->write(message.toUtf8());
     logText->append("[" + QDateTime::currentDateTime().toString() + "] Sent: " + message);
 }
@@ -120,10 +151,13 @@ void MainWindow::readServerResponse()
     // Если ответ сервера содержит команду для сна
     if (response.contains("Go To Sleep To the Garden!")) {
         showGardenImage();
-    } else {
+    }
+    else {
+        // Просто скрываем изображение для всех других ответов
         imageLabel->hide();
     }
 }
+
 void MainWindow::displayError(QAbstractSocket::SocketError socketError)
 {
     Q_UNUSED(socketError);
@@ -133,24 +167,61 @@ void MainWindow::displayError(QAbstractSocket::SocketError socketError)
 
 void MainWindow::showGardenImage()
 {
-    // Пробуем загрузить изображение
-    QString imagePath = QDir::currentPath() + "/garden.jpg";
-    QPixmap gardenImage(imagePath);
+    if (surnameForImage.isEmpty()) {
+        logText->append("[" + QDateTime::currentDateTime().toString() + "] Cannot show image: surname is unknown.");
+        return;
+    }
 
-    if (gardenImage.isNull()) {
-        // Создаем изображение программно, если файла нет
-        gardenImage = QPixmap(400, 300);
+    // Используем путь :/photos/ для изображений студентов
+    QString studentImagePath = ":/photos/" + surnameForImage+ ".jpg";
+
+    // Загружаем изображение студента из ресурсов
+    QPixmap studentImage(studentImagePath);
+
+    // Создаем изображение сада
+    QPixmap gardenImage(400, 300);
+    if (QPixmap("garden.jpg").isNull()) {
         gardenImage.fill(Qt::darkGreen);
-
         QPainter painter(&gardenImage);
         painter.setPen(Qt::white);
         painter.setFont(QFont("Arial", 20));
         painter.drawText(gardenImage.rect(), Qt::AlignCenter, "Sleeping in the Garden");
-
         painter.setBrush(Qt::blue);
         painter.drawEllipse(100, 100, 50, 50); // луна
+    } else {
+        gardenImage = QPixmap("garden.jpg");
     }
 
-    imageLabel->setPixmap(gardenImage.scaled(imageLabel->width(), imageLabel->height(), Qt::KeepAspectRatio));
+    // Создаем композитное изображение
+    QPixmap compositeImage(gardenImage.size());
+    compositeImage.fill(Qt::transparent);
+
+    QPainter painter(&compositeImage);
+    painter.drawPixmap(0, 0, gardenImage);
+
+    // Если изображение студента загружено, накладываем его
+    if (!studentImage.isNull()) {
+        // Увеличиваем размер изображения студента
+        int studentWidth = gardenImage.width() * 0.8; // 90% ширины сада
+        int studentHeight = gardenImage.height() * 0.8; // 90% высоты сада
+
+        studentImage = studentImage.scaled(
+            studentWidth,
+            studentHeight,
+            Qt::KeepAspectRatio,
+            Qt::SmoothTransformation
+            );
+
+        // Позиционируем по центру
+        painter.drawPixmap(
+            compositeImage.width()/2 - studentImage.width()/2,
+            compositeImage.height()/2 - studentImage.height()/2,
+            studentImage
+            );
+    } else {
+        logText->append("[" + QDateTime::currentDateTime().toString() + "] Student image not found for: " + surnameForImage);
+    }
+
+    imageLabel->setPixmap(compositeImage.scaled(imageLabel->width(), imageLabel->height(), Qt::KeepAspectRatio));
     imageLabel->show();
 }
