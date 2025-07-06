@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
     ui->gridLayout->addWidget(paintel, 0, 0);
-    this->setWindowTitle("БИОРИТМЫ | HHCrewgroupTSS");
+    this->setWindowTitle("БИОРИТМЫ | HHCrewgroupSIA");
     ui->physBiorythmName->setStyleSheet("color: rgb(255, 0, 0)");
     ui->psychoBiorythmName->setStyleSheet("color: rgb(0, 0, 255)");
     ui->intellBiorythmName->setStyleSheet("color: rgb(0, 255, 0)");
@@ -29,36 +29,66 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_buildGraphic_clicked()
-{
-    birth.inputDate(ui->birthdayLineEdit->text());
-    if (ui->currDayLineEdit->text().isEmpty()){
-        currDate.setCurrentDate();
-        ui->currDayLineEdit->setText(currDate.outputDate());
+void MainWindow::on_buildGraphic_clicked() {
+    // Проверка даты рождения
+    if (ui->birthdayLineEdit->text().isEmpty()) {
+        QMessageBox::warning(this, "Неверная дата", "Дата рождения не введена.");
+        return;
     }
-    currDate.inputDate(ui->currDayLineEdit->text());
+
+    birth.inputDate(ui->birthdayLineEdit->text());
+    if (!birth.checkDate()) {
+        QMessageBox::warning(this, "Неверная дата", "Неверный формат даты рождения.");
+        return;
+    }
+
+    // Обработка текущей даты
+    if (!ui->currDayLineEdit->text().isEmpty()) {
+        currDate.inputDate(ui->currDayLineEdit->text());
+        if (!currDate.checkDate()) {
+            QMessageBox::warning(this, "Неверная дата", "Неверный формат даты для расчёта.");
+            return;
+        }
+    } else {
+        currDate.setCurrentDate();
+    }
+
+    // Проверка хронологии
+    if (currDate < birth) {
+        QMessageBox::warning(this, "Ошибка даты", "Дата расчёта не может быть раньше даты рождения.");
+        return;
+    }
+
+    // Обновление интерфейса
     ui->birthdayLabel->setText(birth.outputDate());
     ui->currDayLabel->setText(currDate.outputDate());
-    paintel->getDates(currDate, birth);
-    double pi = 3.14159265359;
-    physBiorythmPercent = qRound(qSin(2*pi*currDate.differenceInDays(birth)/23)*100);
-    QString inc = QString::number(physBiorythmPercent);
-    inc += "%";
-    ui->physBiorythm->setText(inc);
-    psychoBiorythmPercent = qRound(qSin(2*pi*currDate.differenceInDays(birth)/28)*100);
-    inc = QString::number(psychoBiorythmPercent);
-    inc += "%";
-    ui->psychoBiorythm->setText(inc);
-    intellBiorythmPercent = qRound(qSin(2*pi*currDate.differenceInDays(birth)/33)*100);
-    inc = QString::number(intellBiorythmPercent);
-    inc += "%";
-    ui->intellBiorythm->setText(inc);
 
+    // Расчёт биоритмов
+    const double pi = 3.141592653589793;
+    auto calcPercent = [&](int period) {
+        return qRound(qSin(2*pi*currDate.differenceInDays(birth)/period)*100);
+    };
+
+    physBiorythmPercent = calcPercent(23);
+    psychoBiorythmPercent = calcPercent(28);
+    intellBiorythmPercent = calcPercent(33);
+
+    auto showValue = [&](QLabel* label, int value) {
+        label->setText(QString::number(value) + "%");
+    };
+
+    showValue(ui->physBiorythm, physBiorythmPercent);
+    showValue(ui->psychoBiorythm, psychoBiorythmPercent);
+    showValue(ui->intellBiorythm, intellBiorythmPercent);
+
+    // Обновление графика
+    paintel->getDates(currDate, birth);
     paintel->firstLaunch = true;
     ui->birthdayLineEdit->clearFocus();
     ui->currDayLineEdit->clearFocus();
     paintel->update();
 }
+
 
 void MainWindow::on_standartFormat_triggered()
 {
