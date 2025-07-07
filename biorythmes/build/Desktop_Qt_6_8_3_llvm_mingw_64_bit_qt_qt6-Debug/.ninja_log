@@ -1,0 +1,11 @@
+# ninja log v6
+6	846	7735383668973523	biorythms_take5_autogen/timestamp	63d7c6619713c7be
+6	846	7735383668973523	biorythms_take5_autogen/mocs_compilation.cpp	63d7c6619713c7be
+6	846	7735383668973523	D:/TheLastQuarterOfTheMark/HHCrewgroup/biorythmes/build/Desktop_Qt_6_8_3_llvm_mingw_64_bit_qt_qt6-Debug/biorythms_take5_autogen/timestamp	63d7c6619713c7be
+6	846	7735383668973523	D:/TheLastQuarterOfTheMark/HHCrewgroup/biorythmes/build/Desktop_Qt_6_8_3_llvm_mingw_64_bit_qt_qt6-Debug/biorythms_take5_autogen/mocs_compilation.cpp	63d7c6619713c7be
+861	2611	7735383669913527	CMakeFiles/biorythms_take5.dir/date.cpp.obj	65956eca0fbc1acc
+855	2684	7735383669863534	CMakeFiles/biorythms_take5.dir/main.cpp.obj	353bf25905ede163
+852	2730	7735383669833535	CMakeFiles/biorythms_take5.dir/biorythms_take5_autogen/mocs_compilation.cpp.obj	56cb4b336cfd99de
+864	2873	7735383669943552	CMakeFiles/biorythms_take5.dir/painter.cpp.obj	ee2bfb9e806fcf0f
+858	2968	7735383669883541	CMakeFiles/biorythms_take5.dir/mainwindow.cpp.obj	4e871c9a9ce29f67
+2968	3064	7735383690994474	biorythms_take5.exe	3335068c8fea3f3a
