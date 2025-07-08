@@ -5,17 +5,25 @@
 #include <QString>
 #include <QMouseEvent>
 #include <QMessageBox>
+#include <QNetworkInterface>
+#include "server.h"
+#include <QTimer>
 
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+    , ui(new Ui::MainWindow),
+    server(new Server(this))
 {
 
 
     ui->setupUi(this);
+
+    connect(server, &Server::logMessage, this, &MainWindow::appendLog);
+    displayLocalIp();
+
     ui->gridLayout->addWidget(paintel, 0, 0);
-    this->setWindowTitle("БИОРИТМЫ | HHCrewgroupSIA");
+    this->setWindowTitle("БИОРИТМЫ SERVER | HHCrewgroup");
     ui->physBiorythmName->setStyleSheet("color: rgb(255, 0, 0)");
     ui->psychoBiorythmName->setStyleSheet("color: rgb(0, 0, 255)");
     ui->intellBiorythmName->setStyleSheet("color: rgb(0, 255, 0)");
@@ -27,6 +35,33 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_btnStart_clicked() {
+    constexpr quint16 port = 12345;
+    if (server->start(port)) {
+        ui->btnStart->setEnabled(false);
+    }
+}
+
+void MainWindow::appendLog(const QString &msg) {
+    ui->txtLog->append(msg);
+}
+
+void MainWindow::displayLocalIp() {
+    for (auto iface : QNetworkInterface::allInterfaces()) {
+        if (iface.flags().testFlag(QNetworkInterface::IsUp)
+            && !iface.addressEntries().isEmpty()) {
+            for (auto entry : iface.addressEntries()) {
+                if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol
+                    && !entry.ip().isLoopback()) {
+                    ui->lblIp->setText(entry.ip().toString());
+                    return;
+                }
+            }
+        }
+    }
+    ui->lblIp->setText("IP не найден");
 }
 
 void MainWindow::on_buildGraphic_clicked() {
@@ -52,6 +87,7 @@ void MainWindow::on_buildGraphic_clicked() {
     // Обновление интерфейса
     ui->birthdayLabel->setText(birth.outputDate());
     ui->currDayLabel->setText(currDate.outputDate());
+    ui->daysLivedNumberLbl->setText(QString::number(currDate.differenceInDays(birth)));
 
     // Расчёт биоритмов
     const double pi = 3.141592653589793;

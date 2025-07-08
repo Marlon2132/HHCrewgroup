@@ -5,6 +5,7 @@
 #include <QMouseEvent>
 #include "date.h"
 #include "painter.h"
+#include "server.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -24,6 +25,9 @@ public:
 public slots:
 
     void updateInfo();
+
+    void on_btnStart_clicked();
+    void appendLog(const QString &msg);
 
 
 
@@ -86,6 +90,9 @@ private:
     int physBiorythmPercent;
     int psychoBiorythmPercent;
     int intellBiorythmPercent;
+
+    Server *server;
+    void displayLocalIp();
 
 };
 #endif // MAINWINDOW_H
