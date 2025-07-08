@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(biorythms_take5 VERSION 0.1 LANGUAGES CXX)
+project(biorythms_server VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTOMOC ON)
@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         date.h date.cpp
         painter.h painter.cpp
         server.h server.cpp
+        records.h
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET biorythms_take5 APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
