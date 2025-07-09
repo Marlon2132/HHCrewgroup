@@ -112,7 +112,13 @@ void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
 
     emit logMessage("Запись не найдена. Осуществляю расчёт...");
 
-    outRec = rec;
+    memcpy(outRec.fullName, req.fullName, sizeof(req.fullName));
+    outRec.birthDay = req.birthDay;
+    outRec.birthMonth = req.birthMonth;
+    outRec.birthYear = req.birthYear;
+    outRec.calcDay = req.calcDay;
+    outRec.calcMonth = req.calcMonth;
+    outRec.calcYear = req.calcYear;
 
     QString bDateStr = QString("%1.%2.%3")
                         .arg(req.birthDay,   2, 10, QChar('0'))
