@@ -37,5 +37,5 @@ void MainWindow::on_requestButton_clicked() {
     ui->painter->firstLaunch = true;
     ui->painter->update();
 
-    ui->statusLabel->setText("График обновлён");
+    ui->statusTEdit->append("График обновлён");
 }
