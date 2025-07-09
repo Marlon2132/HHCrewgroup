@@ -34,7 +34,7 @@ private:
     QHash<QTcpSocket*, QByteArray> m_buf;
 
     // Ищет по ФИО+датам запись в бинарной базе database.db
-    void findInDatabase(const Request   &req,
+    bool findInDatabase(const Request   &req,
                         PersonRecord    &outRec);
 
     // Формирует и шлёт клиенту бинарный ответ:

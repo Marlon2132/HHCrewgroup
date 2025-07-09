@@ -1,6 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
 #include <QDate>
 #include <QMessageBox>
 #include <QtEndian>
@@ -86,18 +85,18 @@ void MainWindow::socketReadyRead() {
         return;
     }
     if (response.size() != 14) {
-        ui->statusTEdit->append(
-            QString("Bad reply length: %1 bytes").arg(response.size()));
+        ui->statusTEdit->append(QString::fromUtf8(response));
         return;
     }
 
-    quint16 days = *reinterpret_cast<quint16*>(response.data());
-    float    p   = *reinterpret_cast<float*>(response.data()+2);
-    float    e   = *reinterpret_cast<float*>(response.data()+6);
-    float    i   = *reinterpret_cast<float*>(response.data()+10);
+    RecievedData Answer;
+    Answer.DaysLived = *reinterpret_cast<quint16*>(response.data());
+    Answer.values[0] = *reinterpret_cast<float*>(response.data()+2);
+    Answer.values[1]   = *reinterpret_cast<float*>(response.data()+6);
+    Answer.values[2]   = *reinterpret_cast<float*>(response.data()+10);
 
     ui->statusTEdit->append(
-        QString("Answer received: %1 days").arg(days));
+        QString("Answer received: %1 days\nPhysical %2%\nPsycho %3%\nIntellectual %4%").arg(Answer.DaysLived).arg(Answer.values[0]*100).arg(Answer.values[1]*100).arg(Answer.values[2]*100));
 
     // Конвертим QDate → Date
     Date birth, calc;
@@ -106,7 +105,7 @@ void MainWindow::socketReadyRead() {
 
     // Передаём в painter
     ui->painter->getDates(calc, birth);
-    ui->painter->setPercents(int(p*100), int(e*100), int(i*100));
+    ui->painter->setPercents(int(Answer.values[0]*100), int(Answer.values[1]*100), int(Answer.values[2]*100));
     ui->painter->firstLaunch = true;
     ui->painter->update();
 }
