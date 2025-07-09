@@ -69,23 +69,23 @@ void MainWindow::displayLocalIp() {
 
 void MainWindow::buildGraphic(QString bDate, QString cDate){
     birth.inputDate(bDate);
-    if (!birth.checkDate()) {
-        QMessageBox::warning(this, "Неверная дата", "Неверный формат даты рождения.");
-        return;
-    }
+    // if (!birth.checkDate()) {
+    //     QMessageBox::warning(this, "Неверная дата", "Неверный формат даты рождения.");
+    //     return;
+    // }
 
     // Обработка текущей даты
     currDate.inputDate(cDate);
-    if (!currDate.checkDate()) {
-        QMessageBox::warning(this, "Неверная дата", "Неверный формат даты для расчёта.");
-        return;
-    }
+    // if (!currDate.checkDate()) {
+    //     QMessageBox::warning(this, "Неверная дата", "Неверный формат даты для расчёта.");
+    //     return;
+    // }
 
     // Проверка хронологии
-    if (currDate < birth) {
-        QMessageBox::warning(this, "Ошибка даты", "Дата расчёта не может быть раньше даты рождения.");
-        return;
-    }
+    // if (currDate < birth) {
+    //     QMessageBox::warning(this, "Ошибка даты", "Дата расчёта не может быть раньше даты рождения.");
+    //     return;
+    // }
 
     // Обновление интерфейса
     ui->birthdayLabel->setText(birth.outputDate());
@@ -254,18 +254,7 @@ void MainWindow::on_setCurrDate_triggered()
 }
 
 
-void MainWindow::on_pushButton_2_clicked()
-{
-    currDate.addDays(1);
-    updateInfoF();
-}
 
-
-void MainWindow::on_pushButton_clicked()
-{
-    currDate.addDays(-1);
-    updateInfoF();
-}
 
 
 

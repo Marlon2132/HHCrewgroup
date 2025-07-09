@@ -64,10 +64,10 @@ void Server::onReadyRead() {
 
     // Поиск в базе
     PersonRecord rec;
-    findInDatabase(req, rec);
-
-    // Отправляем daysLived + values[3]
-    sendPersonRecord(socket, rec);
+    if (findInDatabase(req, rec)){
+        // Отправляем daysLived + values[3]
+        sendPersonRecord(socket, rec);
+    }
 }
 
 void Server::receiveCyclesAndDaysLvd(int physPct,int psychoPct, int intelPct, int daysLvd)
@@ -79,15 +79,15 @@ void Server::receiveCyclesAndDaysLvd(int physPct,int psychoPct, int intelPct, in
 }
 
 
-void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
+bool Server::findInDatabase(const Request &req, PersonRecord &outRec) {
     auto socket = qobject_cast<QTcpSocket*>(sender());
-    if (!socket) return;
+    if (!socket) return false;
 
     QFile db("database.db");
     if (!db.open(QIODevice::ReadWrite)) {
         emit logMessage("Не удалось открыть database.db");
         socket->write("Ошибка! Серверу не удалось открыть базу данных!");
-        return;
+        return false;
     }
 
     PersonRecord rec;
@@ -104,21 +104,13 @@ void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
             && rec.calcYear   == req.calcYear)
         {
             outRec = rec;
-            return;
+            return true;
         }
     }
 
     // запись не найдена
 
     emit logMessage("Запись не найдена. Осуществляю расчёт...");
-
-    memcpy(outRec.fullName, req.fullName, sizeof(req.fullName));
-    outRec.birthDay = req.birthDay;
-    outRec.birthMonth = req.birthMonth;
-    outRec.birthYear = req.birthYear;
-    outRec.calcDay = req.calcDay;
-    outRec.calcMonth = req.calcMonth;
-    outRec.calcYear = req.calcYear;
 
     QString bDateStr = QString("%1.%2.%3")
                         .arg(req.birthDay,   2, 10, QChar('0'))
@@ -131,9 +123,30 @@ void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
                         .arg(req.calcMonth, 2, 10, QChar('0'))
                         .arg(req.calcYear);
     Date cDate;
-    bDate.inputDate(cDateStr);
+    cDate.inputDate(cDateStr);
+
+    if (!bDate.checkDate()){
+        sendText(socket, "Ошибка! Неверный формат даты рождения.");
+        return false;
+    }
+    else if (!cDate.checkDate()){
+        sendText(socket, "Ошибка! Неверный формат даты расчёта.");
+        return false;
+    }
+    else if (cDate < bDate){
+        sendText(socket, "Ошибка! Дата расчёта не может быть раньше даты рождения.");
+        return false;
+    }
 
     emit datesReceived(bDateStr, cDateStr);
+
+    memcpy(outRec.fullName, req.fullName, sizeof(req.fullName));
+    outRec.birthDay = req.birthDay;
+    outRec.birthMonth = req.birthMonth;
+    outRec.birthYear = req.birthYear;
+    outRec.calcDay = req.calcDay;
+    outRec.calcMonth = req.calcMonth;
+    outRec.calcYear = req.calcYear;
 
     outRec.values[0] = (float)m_physPct/100.00;
     outRec.values[1] = (float)m_psychoPct/100.00;
@@ -152,7 +165,7 @@ void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
     db.flush();
     db.close();
 
-    return; // не найдена запись
+    return true; // не найдена запись
 }
 
 void Server::sendPersonRecord(QTcpSocket *socket,
@@ -185,8 +198,7 @@ void Server::onDisconnected() {
 }
 
 void Server::sendText(QTcpSocket *client, const QString &text) {
-    QByteArray block = "TXT:" + text.toUtf8();
-    client->write(block);
+    client->write(text.toUtf8());
     emit logMessage(QString("Отправлено сообщение клиенту %1: %2")
                         .arg(client->peerAddress().toString())
                         .arg(text));
