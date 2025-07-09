@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->intellBiorythmName->setStyleSheet("color: rgb(0, 255, 0)");
 
     connect(this->paintel, &painter::updateInfoSignal, this, &MainWindow::updateInfo);
+    connect(server, &Server::datesReceived, this, &MainWindow::buildGraphic);
 
 }
 
@@ -64,15 +65,15 @@ void MainWindow::displayLocalIp() {
     ui->lblIp->setText("IP не найден");
 }
 
-void MainWindow::on_buildGraphic_clicked() {
-    birth.inputDate("01.01.2001"/*ui->birthdayLineEdit->text()*/);
+void MainWindow::buildGraphic(QString bDate, QString cDate){
+    birth.inputDate(bDate);
     if (!birth.checkDate()) {
         QMessageBox::warning(this, "Неверная дата", "Неверный формат даты рождения.");
         return;
     }
 
     // Обработка текущей даты
-    currDate.inputDate("02.02.2002"/*ui->currDayLineEdit->text()*/);
+    currDate.inputDate(cDate);
     if (!currDate.checkDate()) {
         QMessageBox::warning(this, "Неверная дата", "Неверный формат даты для расчёта.");
         return;

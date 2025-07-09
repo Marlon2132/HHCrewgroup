@@ -1,4 +1,5 @@
 #include "server.h"
+#include "mainwindow.h"
 
 Server::Server(QObject *parent)
     : QTcpServer(parent)
@@ -27,111 +28,111 @@ void Server::incomingConnection(qintptr sd) {
 
 void Server::onReadyRead() {
     auto socket = qobject_cast<QTcpSocket*>(sender());
-    if (!socket)
-        return;
-    //QByteArray block = socket->readAll();
+    if (!socket) return;
 
+    // Буферизуем всё от клиента
     m_buf[socket].append(socket->readAll());
     QByteArray &buf = m_buf[socket];
 
-    // 1) ждём разделитель имени (‘\n’)
-    int pos = buf.indexOf('\n');
-    if (pos < 0) {
-        // строки ещё нет целиком
+    // Ждём пока накопится как минимум sizeof(Request) байт
+    if (buf.size() < int(sizeof(Request)))
         return;
-    }
 
-    // 2) извлекаем имя
-    QByteArray nameBytes = buf.left(30);
+    // Копируем первые 38 байт в Request
+    Request req;
+    memcpy(&req, buf.constData(), sizeof(req));
+    // Удаляем обработанный кусок из буфера
+    buf.remove(0, sizeof(req));
 
-    int zeroPos = nameBytes.indexOf('\0');
-    if (zeroPos != -1)
-        nameBytes.chop(nameBytes.size() - zeroPos);
+    // Преобразуем ФИО в QString без \0 и пробелов
+    QByteArray nameBa(req.fullName, 30);
+    int zeroPos = nameBa.indexOf('\0');
+    if (zeroPos >= 0)
+        nameBa.truncate(zeroPos);
+    QString name = QString::fromUtf8(nameBa);
 
-    // 3) Преобразуем в QString
-    QString name = QString::fromUtf8(nameBytes);
+    emit logMessage(
+        QString("Получен запрос от %1: ДР %2.%3.%4, расчёт %5.%6.%7")
+            .arg(name)
+            .arg(req.birthDay)
+            .arg(req.birthMonth)
+            .arg(req.birthYear)
+            .arg(req.calcDay)
+            .arg(req.calcMonth)
+            .arg(req.calcYear)
+        );
 
-    // удаляем имя+делимитер из буфера
-    buf.remove(0, pos + 1);
-
-    // 4) ждём полного блока дат
-    if (buf.size() < int(sizeof(ReqDates))) {
-        // ждём ещё байт
-        return;
-    }
-
-    // 4) копируем даты
-    ReqDates rd;
-    memcpy(&rd, buf.constData(), sizeof(rd));
-    buf.remove(0, sizeof(rd));  // убираем обработанную часть
-    emit logMessage(QString("Получен запрос от %1.")
-                             .arg(socket->peerAddress().toString()));
-    emit logMessage(QString("Запрос: '%1', ДР %2.%3.%4, расчёт %5.%6.%7")
-                        .arg(name)
-                        .arg(rd.birthDay)
-                        .arg(rd.birthMonth)
-                        .arg(rd.birthYear)
-                        .arg(rd.calcDay)
-                        .arg(rd.calcMonth)
-                        .arg(rd.calcYear));
-    // 5) поиск в базе
+    // Поиск в базе
     PersonRecord rec;
-    if (!findInDatabase(nameBytes, rd, rec)) {
-        emit logMessage("Запись не найдена в database.db");
-        socket->write("ERR");
-        return;
-    }
+    findInDatabase(req, rec);
 
-    // 6) отправка ответа
+    // Отправляем daysLived + values[3]
     sendPersonRecord(socket, rec);
-
-    // Простейшая проверка: если первые байты – текст
-    // if (block.startsWith("TXT:")) {
-    //     QString msg = QString::fromUtf8(block.mid(4));
-    //     emit logMessage(QString("Получено сообщение от %1: %2")
-    //                         .arg(socket->peerAddress().toString())
-    //                         .arg(msg));
-    // }
-    // else if (block.size() != sizeof(Request)) {
-    //     emit logMessage(QString("Ошибка! Получен бинарный файл (%1 байт) от %2. Размер должен быть " + QString::number(sizeof(char[30])))
-    //                         .arg(block.size())
-    //                         .arg(socket->peerAddress().toString()));
-    // }
-    // else {
-    //     emit logMessage(QString("Получен бинарный файл (%1 байт) от %2")
-    //                         .arg(block.size())
-    //                         .arg(socket->peerAddress().toString()));
-    //     // здесь сохранить в файл, или обработать
-    // }
 }
 
-bool Server::findInDatabase(const QByteArray &nameBytes,
-                            const ReqDates &rd,
-                            PersonRecord &outRec)
-{
+void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
+    auto socket = qobject_cast<QTcpSocket*>(sender());
+    if (!socket) return;
+
     QFile db("database.db");
     if (!db.open(QIODevice::ReadOnly)) {
         emit logMessage("Не удалось открыть database.db");
-        return false;
+        socket->write("Ошибка! Серверу не удалось открыть базу данных!");
+        return;
     }
 
     PersonRecord rec;
     while (db.read(reinterpret_cast<char*>(&rec), sizeof(rec))
            == sizeof(rec))
     {
-        if (memcmp(rec.fullName, nameBytes.constData(), 30) == 0
-            && rec.birthDay   == rd.birthDay
-            && rec.birthMonth == rd.birthMonth
-            && rec.birthYear  == rd.birthYear
-            && rec.calcDay    == rd.calcDay
-            && rec.calcMonth  == rd.calcMonth
-            && rec.calcYear   == rd.calcYear)
+        // Побайтово сравниваем ФИО и даты
+        if (memcmp(rec.fullName, req.fullName, 30)  == 0
+            && rec.birthDay   == req.birthDay
+            && rec.birthMonth == req.birthMonth
+            && rec.birthYear  == req.birthYear
+            && rec.calcDay    == req.calcDay
+            && rec.calcMonth  == req.calcMonth
+            && rec.calcYear   == req.calcYear)
         {
             outRec = rec;
-            return true;
+            return;
         }
     }
-    return false;
+
+    // запись не найдена
+
+    emit logMessage("Запись не найдена. Осуществляю расчёт...");
+
+    outRec = rec;
+
+    QString bDateStr = QString("%1.%2.%3")
+                        .arg(req.birthDay,   2, 10, QChar('0'))
+                        .arg(req.birthMonth, 2, 10, QChar('0'))
+                        .arg(req.birthYear);
+    Date bDate;
+    bDate.inputDate(bDateStr);
+    QString cDateStr = QString("%1.%2.%3")
+                        .arg(req.calcDay,   2, 10, QChar('0'))
+                        .arg(req.calcMonth, 2, 10, QChar('0'))
+                        .arg(req.calcYear);
+    Date cDate;
+    bDate.inputDate(cDateStr);
+
+    emit datesReceived(bDateStr, cDateStr);
+
+    const double pi = 3.141592653589793;
+    auto calcPercent = [&](int period) {
+        return qRound(qSin(2*pi*cDate.differenceInDays(bDate)/period)*100);
+    };
+
+    outRec.values[0] = calcPercent(23);
+    outRec.values[1] = calcPercent(28);
+    outRec.values[2] = calcPercent(33);
+
+    outRec.daysLived = cDate.differenceInDays(bDate);
+
+    return; // не найдена запись
+
 }
 
 void Server::sendPersonRecord(QTcpSocket *socket,

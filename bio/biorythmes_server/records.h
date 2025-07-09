@@ -7,7 +7,8 @@
 #pragma pack(push, 1)
 
 /// Структура запроса от клиента
-struct ReqDates {
+struct Request {
+    char fullName[30]; // ФИО 30 байт
     quint8 birthDay;       // день рождения (1 байт)
     quint8 birthMonth;     // месяц рождения (1 байт)
     quint16 birthYear;      // год рождения (2 байта)

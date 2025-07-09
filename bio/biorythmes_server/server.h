@@ -16,6 +16,7 @@ public:
 
 signals:
     void logMessage(const QString &msg);
+    void datesReceived(const QString &birthDate, const QString &calcDate);
 
 public slots:
     void sendText(QTcpSocket *client, const QString &text);
@@ -33,12 +34,8 @@ private:
     QHash<QTcpSocket*, QByteArray> m_buf;
 
     // Ищет по ФИО+датам запись в бинарной базе database.db
-    // nameBytes — ровно 30 байт ФИО из запроса (без '\0')
-    // rd        — даты из запроса (ReqDates)
-    // outRec    — найденная запись
-    bool findInDatabase(const QByteArray &nameBytes,
-                        const ReqDates   &rd,
-                        PersonRecord     &outRec);
+    void findInDatabase(const Request   &req,
+                        PersonRecord    &outRec);
 
     // Формирует и шлёт клиенту бинарный ответ:
     // 2 байта daysLived + 3×4 байта float values[3]

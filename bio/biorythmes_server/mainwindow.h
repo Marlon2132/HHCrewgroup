@@ -29,11 +29,7 @@ public slots:
     void on_btnStart_clicked();
     void appendLog(const QString &msg);
 
-
-
 private slots:
-    void on_buildGraphic_clicked();
-
     void on_standartFormat_triggered();
 
     void on_textFormat_triggered();
@@ -93,6 +89,8 @@ private:
 
     Server *server;
     void displayLocalIp();
+
+    void buildGraphic(QString bDate, QString cDate);
 
 };
 #endif // MAINWINDOW_H
