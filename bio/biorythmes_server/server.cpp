@@ -84,7 +84,7 @@ void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
     if (!socket) return;
 
     QFile db("database.db");
-    if (!db.open(QIODevice::ReadOnly)) {
+    if (!db.open(QIODevice::ReadWrite)) {
         emit logMessage("Не удалось открыть database.db");
         socket->write("Ошибка! Серверу не удалось открыть базу данных!");
         return;
@@ -135,8 +135,18 @@ void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
 
     outRec.daysLived = (quint16)m_daysLvd;
 
-    return; // не найдена запись
+    // Запись в db
 
+    QByteArray new_note;
+
+    new_note.reserve(sizeof(outRec));
+    new_note.append(reinterpret_cast<const char*>(&outRec),sizeof(outRec));
+
+    db.write(new_note);
+    db.flush();
+    db.close();
+
+    return; // не найдена запись
 }
 
 void Server::sendPersonRecord(QTcpSocket *socket,
