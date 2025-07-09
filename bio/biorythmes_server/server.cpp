@@ -70,6 +70,15 @@ void Server::onReadyRead() {
     sendPersonRecord(socket, rec);
 }
 
+void Server::receiveCyclesAndDaysLvd(int physPct,int psychoPct, int intelPct, int daysLvd)
+{
+    m_physPct = physPct;
+    m_psychoPct = psychoPct;
+    m_intelPct = intelPct;
+    m_daysLvd = daysLvd;
+}
+
+
 void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
     auto socket = qobject_cast<QTcpSocket*>(sender());
     if (!socket) return;
@@ -120,16 +129,11 @@ void Server::findInDatabase(const Request &req, PersonRecord &outRec) {
 
     emit datesReceived(bDateStr, cDateStr);
 
-    const double pi = 3.141592653589793;
-    auto calcPercent = [&](int period) {
-        return qRound(qSin(2*pi*cDate.differenceInDays(bDate)/period)*100);
-    };
+    outRec.values[0] = (float)m_physPct/100.00;
+    outRec.values[1] = (float)m_psychoPct/100.00;
+    outRec.values[2] = (float)m_intelPct/100.00;
 
-    outRec.values[0] = calcPercent(23);
-    outRec.values[1] = calcPercent(28);
-    outRec.values[2] = calcPercent(33);
-
-    outRec.daysLived = cDate.differenceInDays(bDate);
+    outRec.daysLived = (quint16)m_daysLvd;
 
     return; // не найдена запись
 

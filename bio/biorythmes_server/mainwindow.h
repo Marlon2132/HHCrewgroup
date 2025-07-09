@@ -29,6 +29,9 @@ public slots:
     void on_btnStart_clicked();
     void appendLog(const QString &msg);
 
+signals:
+    void cyclesAndDaysLivedComputed(int physPct, int psychoPct, int intelPct, int dLived);
+
 private slots:
     void on_standartFormat_triggered();
 

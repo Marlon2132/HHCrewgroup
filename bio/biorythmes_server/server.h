@@ -21,7 +21,7 @@ signals:
 public slots:
     void sendText(QTcpSocket *client, const QString &text);
     void sendBinary(QTcpSocket *client, const QByteArray &data);
-
+    void receiveCyclesAndDaysLvd(int physPct, int psychoPct, int intelPct, int daysLvd);
 protected:
     void incomingConnection(qintptr socketDescriptor) override;
 
@@ -41,6 +41,11 @@ private:
     // 2 байта daysLived + 3×4 байта float values[3]
     void sendPersonRecord(QTcpSocket *client,
                           const PersonRecord &rec);
+
+    int m_physPct;
+    int m_psychoPct;
+    int m_intelPct;
+    int m_daysLvd;
 };
 
 #endif // SERVER_H

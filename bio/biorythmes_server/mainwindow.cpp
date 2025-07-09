@@ -30,6 +30,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(this->paintel, &painter::updateInfoSignal, this, &MainWindow::updateInfo);
     connect(server, &Server::datesReceived, this, &MainWindow::buildGraphic);
+    connect(this, &MainWindow::cyclesAndDaysLivedComputed, server, &Server::receiveCyclesAndDaysLvd);
+
 
 }
 
@@ -99,6 +101,9 @@ void MainWindow::buildGraphic(QString bDate, QString cDate){
     physBiorythmPercent = calcPercent(23);
     psychoBiorythmPercent = calcPercent(28);
     intellBiorythmPercent = calcPercent(33);
+
+    emit cyclesAndDaysLivedComputed(physBiorythmPercent, psychoBiorythmPercent, intellBiorythmPercent, currDate.differenceInDays(birth));
+
 
     auto showValue = [&](QLabel* label, int value) {
         label->setText(QString::number(value) + "%");
