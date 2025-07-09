@@ -2,10 +2,12 @@
 #define REQUEST_H
 
 #include <QtGlobal>
+#include <QString>
 
 #pragma pack(push, 1)
 
 struct ReqDates {
+    char fullname[30];
     quint8  birthDay;
     quint8  birthMonth;
     quint16 birthYear;
