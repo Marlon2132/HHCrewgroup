@@ -1,4 +1,5 @@
 QT += core gui widgets
+QT += core gui widgets network
 
 TEMPLATE = app
 
@@ -13,7 +14,8 @@ SOURCES += \
 HEADERS += \
     mainwindow.h \
     painter.h \
-    date.h
+    date.h \
+    request.h
 
 FORMS += \
     mainwindow.ui

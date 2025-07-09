@@ -11,10 +11,17 @@
 Painter::Painter(QWidget *parent) :
     QWidget{parent}
 {
-
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
     setMouseTracking(1);
+}
+
+void Painter::setPercents(int physPercent, int psychoPercent, int intelPercent)
+{
+    physBiorythmPercent   = physPercent;
+    psychoBiorythmPercent = psychoPercent;
+    intellBiorythmPercent = intelPercent;
+    update();
 }
 
 void Painter::paintEvent(QPaintEvent *event)
@@ -616,19 +623,17 @@ void Painter::getDates(Date _currDate, Date _birth)
     birth.inputDate(_birth.outputDate());
 }
 
-void Painter::changeFormat(int x) {
-    if (x > 0 && x < 4)
-    {
+void Painter::changeFormat(int x)
+{
+    if (x > 0 && x < 4) {
         currDate.changeFormat(x);
         birth.changeFormat(x);
         format = x;
     }
 }
 
-
 void Painter::mouseMoveEvent(QMouseEvent* event)
 {
-
     x = event->pos().x();
     y = event->pos().y();
     update();
@@ -636,7 +641,7 @@ void Painter::mouseMoveEvent(QMouseEvent* event)
 
 void Painter::mouseDoubleClickEvent(QMouseEvent* event)
 {
-
+    Q_UNUSED(event);
     currDate = cursorDate;
     update();
     emit updateInfoSignal();

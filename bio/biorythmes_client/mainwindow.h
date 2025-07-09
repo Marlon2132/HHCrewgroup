@@ -3,11 +3,12 @@
 
 #include <QMainWindow>
 #include <QDate>
+#include <QTcpSocket>
+#include <QAbstractSocket>
 #include "painter.h"
+#include "request.h"
 
-namespace Ui {
-class MainWindow;
-}
+namespace Ui { class MainWindow; }
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -18,9 +19,15 @@ public:
 
 private slots:
     void on_requestButton_clicked();
+    void socketConnected();
+    void socketReadyRead();
+    void socketError(QAbstractSocket::SocketError err);
+    void socketDisconnected();
 
 private:
     Ui::MainWindow *ui;
+    QTcpSocket     *m_socket   = nullptr;
+    bool            m_connected = false;
 };
 
 #endif // MAINWINDOW_H
