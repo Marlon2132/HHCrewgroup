@@ -16,6 +16,11 @@ struct ReqDates {
     quint16 calcYear;
 };
 
+struct RecievedData {
+    quint16 DaysLived;
+    float values[3];
+};
+
 #pragma pack(pop)
 
 #endif // REQUEST_H

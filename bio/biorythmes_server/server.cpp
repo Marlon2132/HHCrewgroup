@@ -70,6 +70,7 @@ void Server::onReadyRead() {
     }
 }
 
+
 void Server::receiveCyclesAndDaysLvd(int physPct,int psychoPct, int intelPct, int daysLvd)
 {
     m_physPct = physPct;
@@ -113,15 +114,15 @@ bool Server::findInDatabase(const Request &req, PersonRecord &outRec) {
     emit logMessage("Запись не найдена. Осуществляю расчёт...");
 
     QString bDateStr = QString("%1.%2.%3")
-                        .arg(req.birthDay,   2, 10, QChar('0'))
-                        .arg(req.birthMonth, 2, 10, QChar('0'))
-                        .arg(req.birthYear);
+                           .arg(req.birthDay,   2, 10, QChar('0'))
+                           .arg(req.birthMonth, 2, 10, QChar('0'))
+                           .arg(req.birthYear);
     Date bDate;
     bDate.inputDate(bDateStr);
     QString cDateStr = QString("%1.%2.%3")
-                        .arg(req.calcDay,   2, 10, QChar('0'))
-                        .arg(req.calcMonth, 2, 10, QChar('0'))
-                        .arg(req.calcYear);
+                           .arg(req.calcDay,   2, 10, QChar('0'))
+                           .arg(req.calcMonth, 2, 10, QChar('0'))
+                           .arg(req.calcYear);
     Date cDate;
     cDate.inputDate(cDateStr);
 
@@ -167,6 +168,7 @@ bool Server::findInDatabase(const Request &req, PersonRecord &outRec) {
 
     return true; // не найдена запись
 }
+
 
 void Server::sendPersonRecord(QTcpSocket *socket,
                               const PersonRecord &rec)
