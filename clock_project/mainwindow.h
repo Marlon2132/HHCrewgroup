@@ -1,0 +1,32 @@
+#ifndef MAINWINDOW_H
+#define MAINWINDOW_H
+
+#include <QMainWindow>
+#include <QTimer>
+#include "softwatchwidget.h"
+#include "datetimeinputdialog.h"
+
+namespace Ui {
+class MainWindow;
+}
+
+class MainWindow : public QMainWindow
+{
+    Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow();
+
+private slots:
+    void updateTime();
+    void showInputDialog();
+    void onHelpTriggered();
+
+private:
+    Ui::MainWindow *ui;
+    SoftWatchWidget *softWatch;
+    QTimer *timer;
+};
+
+#endif // MAINWINDOW_H

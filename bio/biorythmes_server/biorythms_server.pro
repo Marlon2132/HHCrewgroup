@@ -41,7 +41,7 @@ macx {
 #win32 {
  #   RC_ICONS = app.ico
   #  VERSION = 0.1.0
-#}
+#2}
 
 # Флаги компилятора
 QMAKE_CXXFLAGS += -std=c++17
