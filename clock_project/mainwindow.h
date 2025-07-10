@@ -19,9 +19,11 @@ public:
     ~MainWindow();
 
 private slots:
+    void on_setTimeAction_triggered();
+    void on_helpAction_triggered();
+
     void updateTime();
     void showInputDialog();
-    void onHelpTriggered();
 
 private:
     Ui::MainWindow *ui;

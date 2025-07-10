@@ -22,16 +22,13 @@ MainWindow::MainWindow(QWidget *parent)
     timer->start(1000); // Обновление каждую секунду
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
     updateTime();
-
-    // Настраиваем меню
-    QMenu *timeMenu = menuBar()->addMenu("Время");
-    QAction *setTimeAction = timeMenu->addAction("Установить время");
-    connect(setTimeAction, &QAction::triggered, this, &MainWindow::showInputDialog);
-
-    QMenu *helpMenu = menuBar()->addMenu("Помощь");
-    QAction *helpAction = helpMenu->addAction("О программе");
-    connect(helpAction, &QAction::triggered, this, &MainWindow::onHelpTriggered);
 }
+
+void MainWindow::on_setTimeAction_triggered()
+{
+    showInputDialog();
+}
+
 
 void MainWindow::updateTime()
 {
@@ -49,7 +46,7 @@ void MainWindow::showInputDialog()
     }
 }
 
-void MainWindow::onHelpTriggered()
+void MainWindow::on_helpAction_triggered()
 {
     QMessageBox::information(this, "О программе",
                              "Часы Дали\n\n"

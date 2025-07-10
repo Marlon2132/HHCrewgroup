@@ -20,10 +20,40 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>17</height>
     </rect>
    </property>
+   <widget class="QMenu" name="timeMenu">
+    <property name="title">
+     <string>Время</string>
+    </property>
+    <addaction name="setTimeAction"/>
+   </widget>
+   <widget class="QMenu" name="helpMenu">
+    <property name="title">
+     <string>Помощь</string>
+    </property>
+    <addaction name="helpAction"/>
+   </widget>
+   <widget class="QMenu" name="menu123">
+    <property name="title">
+     <string>123</string>
+    </property>
+   </widget>
+   <addaction name="timeMenu"/>
+   <addaction name="helpMenu"/>
+   <addaction name="menu123"/>
   </widget>
+  <action name="setTimeAction">
+   <property name="text">
+    <string>Установить время</string>
+   </property>
+  </action>
+  <action name="helpAction">
+   <property name="text">
+    <string>О программе</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>
