@@ -3,5 +3,8 @@
         <file>images/background.jpg</file>
         <file>images/bg2.jpg</file>
         <file>images/clocks.png</file>
+        <file>images/bg3.jpg</file>
+        <file>images/bg4.jpg</file>
+        <file>images/bg5.jpg</file>
     </qresource>
 </RCC>

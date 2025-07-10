@@ -24,6 +24,9 @@ private slots:
 
     void on_BGchange1_triggered();
     void on_BGchange2_triggered();
+    void on_BGchange3_triggered();
+    void on_BGchange4_triggered();
+    void on_BGchange5_triggered();
 
     void updateTime();
     void showInputDialog();

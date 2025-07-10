@@ -45,12 +45,15 @@
      </property>
      <addaction name="BGchange1"/>
      <addaction name="BGchange2"/>
+     <addaction name="BGchange3"/>
+     <addaction name="BGchange4"/>
+     <addaction name="BGchange5"/>
     </widget>
     <addaction name="bgMenu_2"/>
    </widget>
    <addaction name="timeMenu"/>
-   <addaction name="helpMenu"/>
    <addaction name="mainMenu"/>
+   <addaction name="helpMenu"/>
   </widget>
   <action name="setTimeAction">
    <property name="text">
@@ -69,7 +72,22 @@
   </action>
   <action name="BGchange2">
    <property name="text">
-    <string>Второй</string>
+    <string>Дорога</string>
+   </property>
+  </action>
+  <action name="BGchange3">
+   <property name="text">
+    <string>Дом</string>
+   </property>
+  </action>
+  <action name="BGchange4">
+   <property name="text">
+    <string>Город</string>
+   </property>
+  </action>
+  <action name="BGchange5">
+   <property name="text">
+    <string>Пляж</string>
    </property>
   </action>
  </widget>
