@@ -51,9 +51,7 @@ private slots:
 
     void on_setCurrDate_triggered();
 
-    void on_pushButton_2_clicked();
 
-    void on_pushButton_clicked();
 
     void on_action_triggered();
 

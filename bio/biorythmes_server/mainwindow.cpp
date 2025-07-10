@@ -254,18 +254,7 @@ void MainWindow::on_setCurrDate_triggered()
 }
 
 
-void MainWindow::on_pushButton_2_clicked()
-{
-    currDate.addDays(1);
-    updateInfoF();
-}
 
-
-void MainWindow::on_pushButton_clicked()
-{
-    currDate.addDays(-1);
-    updateInfoF();
-}
 
 
 

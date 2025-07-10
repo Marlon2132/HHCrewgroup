@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
+<<<<<<< HEAD
+<!-- Written by QtCreator 16.0.1, 2025-07-07T12:57:55. -->
+=======
 <!-- Written by QtCreator 15.0.1, 2025-07-08T15:53:58. -->
+>>>>>>> 62e20ecc5fb745ae1bfec920c0b9f4e266e9e1d4
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -246,12 +250,20 @@
     <value type="QString" key="PerfRecordArgsId">-e cpu-cycles --call-graph &quot;dwarf,4096&quot; -F 250</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName"></value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:</value>
+<<<<<<< HEAD
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">D:/RK-PPMOP/OldSchizo/HHCrewgroup/Garson/ServerGarson/ServerGarson.pro</value>
+=======
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">D:/PracticeZub/HHCrewgroup/Garson/ServerGarson/ServerGarson.pro</value>
+>>>>>>> 62e20ecc5fb745ae1bfec920c0b9f4e266e9e1d4
     <value type="bool" key="ProjectExplorer.RunConfiguration.Customized">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
+<<<<<<< HEAD
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/RK-PPMOP/OldSchizo/HHCrewgroup/Garson/ServerGarson/build/Desktop_Qt_6_8_3_llvm_mingw_64_bit-Debug</value>
+=======
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">D:/PracticeZub/HHCrewgroup/Garson/ServerGarson/build/Desktop_Qt_6_8_2_MinGW_64_bit-Debug</value>
+>>>>>>> 62e20ecc5fb745ae1bfec920c0b9f4e266e9e1d4
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>
   </valuemap>
