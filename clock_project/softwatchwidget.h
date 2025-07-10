@@ -23,6 +23,9 @@ protected:
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
 
+private slots:
+    void updateTime();
+
 private:
     void drawSoftHand(QPainter *painter, double angleRadians,
                       double baseLength, double width,
@@ -30,6 +33,7 @@ private:
     double interpolateRadius(double angleDeg) const;
     void updateBackground();
     void updateOverlay();
+    double getDialAngle(double fraction) const;
 
     QDateTime m_dateTime;
     QMap<int, double> dialAngles;
@@ -38,6 +42,8 @@ private:
     QPixmap scaledBackground;
     QPixmap overlay;
     QPixmap scaledOverlay;
+    QTimer *m_timer;
+    QVector<double> dialAnglesForMinutes;
 };
 
-#endif // SOFTWATCHWIDGET_H
+#endif

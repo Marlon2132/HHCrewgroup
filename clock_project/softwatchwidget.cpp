@@ -5,10 +5,10 @@
 #include <QResizeEvent>
 #include <QtMath>
 #include <QPainterPath>
+#include <QTimer>
 
 SoftWatchWidget::SoftWatchWidget(QWidget *parent) : QWidget(parent)
 {
-    // Углы и радиусы для циферблата в стиле Дали
     dialAngles[12] = 160.0;   dialRadii[12] = 1.000;
     dialAngles[1]  = 145.0;   dialRadii[1]  = 0.763;
     dialAngles[2]  = 123.0;   dialRadii[2]  = 0.502;
@@ -22,35 +22,51 @@ SoftWatchWidget::SoftWatchWidget(QWidget *parent) : QWidget(parent)
     dialAngles[10] = 210.0;   dialRadii[10] = 0.400;
     dialAngles[11] = 195.0;   dialRadii[11] = 0.600;
 
-    // Загрузка фонового изображения
+    dialAnglesForMinutes << dialAngles[12]  // 0 минут
+                         << dialAngles[1]   // 5 минут
+                         << dialAngles[2]   // 10 минут
+                         << dialAngles[3]   // 15 минут
+                         << dialAngles[4]   // 20 минут
+                         << dialAngles[5]   // 25 минут
+                         << dialAngles[6]   // 30 минут
+                         << dialAngles[7]   // 35 минут
+                         << dialAngles[8]   // 40 минут
+                         << dialAngles[9]   // 45 минут
+                         << dialAngles[10]  // 50 минут
+                         << dialAngles[11]; // 55 минут
+
     if (!background.load(":/images/background.jpg")) {
-        qDebug() << "Failed to load background image! Using default color.";
         background = QPixmap(size());
         background.fill(Qt::darkGray);
     }
 
     if (!overlay.load(":/images/clocks.png")) {
-        qWarning() << "Failed to load overlay";
     }
 
     m_dateTime = QDateTime::currentDateTime();
     setWindowTitle("Постоянство памяти");
+
+    m_timer = new QTimer(this);
+    connect(m_timer, &QTimer::timeout, this, &SoftWatchWidget::updateTime);
+    m_timer->start(50);
+}
+
+void SoftWatchWidget::updateTime()
+{
+    m_dateTime = QDateTime::currentDateTime();
+    update();
 }
 
 void SoftWatchWidget::setBackgroundImage(const QString &resourcePath)
 {
-    // 1) Пытаемся загрузить
     QPixmap pix(resourcePath);
     if (pix.isNull()) {
-        qDebug() << "SoftWatchWidget: failed to load" << resourcePath;
         return;
     }
 
-    // 2) Сохраняем, масштабируем и перерисовываем
     background = pix;
     updateBackground();
-    //updateOverlay();
-    update();   // вызовет paintEvent()
+    update();
 }
 
 void SoftWatchWidget::setDateTime(const QDateTime &dateTime)
@@ -80,6 +96,33 @@ void SoftWatchWidget::updateOverlay()
         Qt::KeepAspectRatioByExpanding,
         Qt::SmoothTransformation
         );
+}
+
+double SoftWatchWidget::getDialAngle(double fraction) const
+{
+    fraction = fmod(fraction, 12.0);
+    if (fraction < 0) fraction += 12.0;
+
+    int index = static_cast<int>(fraction);
+    double frac = fraction - index;
+
+    double angle1 = dialAnglesForMinutes[index];
+    double angle2 = dialAnglesForMinutes[(index+1) % 12];
+
+    double diff = angle2 - angle1;
+    if (diff > 180.0) {
+        diff -= 360.0;
+    } else if (diff < -180.0) {
+        diff += 360.0;
+    }
+
+    double angle = angle1 + frac * diff;
+    if (angle < 0)
+        angle += 360.0;
+    else if (angle >= 360.0)
+        angle -= 360.0;
+
+    return angle;
 }
 
 double SoftWatchWidget::interpolateRadius(double angleDeg) const
@@ -129,7 +172,6 @@ void SoftWatchWidget::paintEvent(QPaintEvent *)
     painter.setRenderHint(QPainter::Antialiasing, true);
     painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
-    // Рисуем фон
     if (!scaledBackground.isNull()) {
         painter.drawPixmap(0, 0, scaledBackground);
     }
@@ -139,7 +181,7 @@ void SoftWatchWidget::paintEvent(QPaintEvent *)
     }
 
     int side = qMin(width(), height());
-    painter.translate(width() / 3.85, height() * 0.615);
+    painter.translate(width() / 3.92, height() * 0.619);
     double scaleFactor = side / 400.0;
     painter.scale(scaleFactor, scaleFactor);
 
@@ -148,19 +190,20 @@ void SoftWatchWidget::paintEvent(QPaintEvent *)
     double minutes = time.minute() + seconds / 60.0;
     double hours = time.hour() % 12 + minutes / 60.0;
 
-    const double twelveOclockAngle = 160.0;
-    double hourAngle = qDegreesToRadians(twelveOclockAngle - hours * 30.0 - minutes * 0.5);
-    double minuteAngle = qDegreesToRadians(twelveOclockAngle - minutes * 6.0);
-    double secondAngle = qDegreesToRadians(twelveOclockAngle - seconds * 6.0);
+    double hourAngleDeg = getDialAngle(hours);
+    double minuteAngleDeg = getDialAngle(minutes / 5.0);
+    double secondAngleDeg = getDialAngle(seconds / 5.0);
+
+    double hourAngle = qDegreesToRadians(hourAngleDeg);
+    double minuteAngle = qDegreesToRadians(minuteAngleDeg);
+    double secondAngle = qDegreesToRadians(secondAngleDeg);
 
     double globalPhase = QDateTime::currentMSecsSinceEpoch() / 1000.0;
 
-    // Рисуем стрелки
-    drawSoftHand(&painter, hourAngle, 70 * 0.5, 8, QColor(70, 80, 160), globalPhase * 0.3);
-    drawSoftHand(&painter, minuteAngle, 100 * 0.5, 6, QColor(80, 140, 200), globalPhase * 0.7);
+    drawSoftHand(&painter, hourAngle, 70 * 0.5, 6, QColor(70, 80, 160), globalPhase * 0.3);
+    drawSoftHand(&painter, minuteAngle, 100 * 0.5, 4, QColor(80, 140, 200), globalPhase * 0.7);
     drawSoftHand(&painter, secondAngle, 120 * 0.5, 3, QColor(220, 60, 60), globalPhase * 1.5);
 
-    // Центральная точка
     painter.setBrush(Qt::black);
     painter.setPen(Qt::NoPen);
     painter.drawEllipse(QPointF(0, 0), 3, 3);
@@ -200,28 +243,26 @@ void SoftWatchWidget::drawSoftHand(QPainter *painter, double angleRadians,
     path.moveTo(0, 0);
     path.cubicTo(cp1, cp2, endPoint);
 
-    // Тени для создания 3D-эффекта
     painter->save();
     QPainterPath shadowPath1 = path;
-    shadowPath1.translate(2, 2);
+    shadowPath1.translate(1, 1);
     QPen shadowPen1(QColor(0, 0, 0, 80));
-    shadowPen1.setWidth(width + 1);
+    shadowPen1.setWidthF(width + 0.5);
     shadowPen1.setCapStyle(Qt::RoundCap);
     shadowPen1.setJoinStyle(Qt::RoundJoin);
     painter->setPen(shadowPen1);
     painter->drawPath(shadowPath1);
 
     QPainterPath shadowPath2 = path;
-    shadowPath2.translate(1, 1);
+    shadowPath2.translate(0.5, 0.5);
     QPen shadowPen2(QColor(0, 0, 0, 40));
-    shadowPen2.setWidth(width + 2);
+    shadowPen2.setWidthF(width + 1);
     shadowPen2.setCapStyle(Qt::RoundCap);
     shadowPen2.setJoinStyle(Qt::RoundJoin);
     painter->setPen(shadowPen2);
     painter->drawPath(shadowPath2);
     painter->restore();
 
-    // Основная стрелка с градиентом
     painter->save();
     QLinearGradient arrowGrad(0, 0, endPoint.x(), endPoint.y());
     arrowGrad.setColorAt(0, color.lighter(140));
