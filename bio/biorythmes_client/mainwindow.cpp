@@ -103,9 +103,12 @@ void MainWindow::socketReadyRead() {
     birth.inputDate(ui->birthDateEdit->date().toString("dd.MM.yyyy"));
     calc .inputDate(ui->calcDateEdit ->date().toString("dd.MM.yyyy"));
 
+    Date today;
+    today.setToCurrentDate();
     // Передаём в painter
     ui->painter->getDates(calc, birth);
-    ui->painter->setPercents(int(Answer.values[0]*100), int(Answer.values[1]*100), int(Answer.values[2]*100));
+    ui->painter->setDaysLived(Answer.DaysLived);
+    ui->painter->setTodayAndCalcDates(today, calc);
     ui->painter->firstLaunch = true;
     ui->painter->update();
 }

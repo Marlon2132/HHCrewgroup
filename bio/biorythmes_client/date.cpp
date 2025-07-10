@@ -107,6 +107,12 @@ int Date::daysFromDate() const {
     return differenceInDays(currentDate());
 }
 
+void Date::setToCurrentDate()
+{
+    QDate current = QDate::currentDate();
+    setDate(current.day(), current.month(), current.year());
+}
+
 void Date::addDays(int delta) {
     if (delta == 0) return;
 
@@ -338,6 +344,10 @@ int Date::operator+(Date& date) const {
 
 bool Date::operator==(const Date& _date) const {
     return toDays() == _date.toDays();
+}
+
+int Date::operator-(const Date& other) const {
+    return this->toDays() - other.toDays();
 }
 
 int Date::toNextBirthday() const {

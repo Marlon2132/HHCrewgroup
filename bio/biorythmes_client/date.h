@@ -24,7 +24,7 @@ public:
     bool isLeapYear() const;                                          // если год в данной дате високосный, возвращает true, иначе false
     void changeFormat(int x = 1);                                     // для определения формата ввода-вывода даты
     bool checkDate() const;                        // проверяет правильность даты
-
+    void setToCurrentDate();
     void setCurrentDate();                                            // присваивает объекту Date текущую дату
     Date currentDate() const ;                                        // возвращает текущую дату
     int differenceInDays(const Date& other) const;                    // возвращает разницу между датами в днях
@@ -40,7 +40,7 @@ public:
     Date operator-(int days) const;                                   // перегрузка - для отнимания от даты числа дней
     int operator-(Date& date) const;
     int operator+(Date& date) const;
-
+    int operator-(const Date& other) const;
     friend QString operator<<(QString &strOut, const Date date);
     friend QString operator>>(QString strIn, Date &date);
     bool operator>(const Date& _date) const;
