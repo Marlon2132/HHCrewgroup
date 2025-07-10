@@ -22,6 +22,9 @@ private slots:
     void on_setTimeAction_triggered();
     void on_helpAction_triggered();
 
+    void on_BGchange1_triggered();
+    void on_BGchange2_triggered();
+
     void updateTime();
     void showInputDialog();
 

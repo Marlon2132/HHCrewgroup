@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/">
         <file>images/background.jpg</file>
+        <file>images/bg2.jpg</file>
+        <file>images/clocks.png</file>
     </qresource>
 </RCC>

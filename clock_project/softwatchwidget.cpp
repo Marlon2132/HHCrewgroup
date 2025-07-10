@@ -29,8 +29,28 @@ SoftWatchWidget::SoftWatchWidget(QWidget *parent) : QWidget(parent)
         background.fill(Qt::darkGray);
     }
 
+    if (!overlay.load(":/images/clocks.png")) {
+        qWarning() << "Failed to load overlay";
+    }
+
     m_dateTime = QDateTime::currentDateTime();
     setWindowTitle("Постоянство памяти");
+}
+
+void SoftWatchWidget::setBackgroundImage(const QString &resourcePath)
+{
+    // 1) Пытаемся загрузить
+    QPixmap pix(resourcePath);
+    if (pix.isNull()) {
+        qDebug() << "SoftWatchWidget: failed to load" << resourcePath;
+        return;
+    }
+
+    // 2) Сохраняем, масштабируем и перерисовываем
+    background = pix;
+    updateBackground();
+    //updateOverlay();
+    update();   // вызовет paintEvent()
 }
 
 void SoftWatchWidget::setDateTime(const QDateTime &dateTime)
@@ -43,12 +63,23 @@ void SoftWatchWidget::resizeEvent(QResizeEvent *event)
 {
     QWidget::resizeEvent(event);
     updateBackground();
+    updateOverlay();
 }
 
 void SoftWatchWidget::updateBackground()
 {
     if (background.isNull()) return;
     scaledBackground = background.scaled(size(), Qt::KeepAspectRatioByExpanding, Qt::SmoothTransformation);
+}
+
+void SoftWatchWidget::updateOverlay()
+{
+    if (overlay.isNull()) return;
+    scaledOverlay = overlay.scaled(
+        size(),
+        Qt::KeepAspectRatioByExpanding,
+        Qt::SmoothTransformation
+        );
 }
 
 double SoftWatchWidget::interpolateRadius(double angleDeg) const
@@ -101,6 +132,10 @@ void SoftWatchWidget::paintEvent(QPaintEvent *)
     // Рисуем фон
     if (!scaledBackground.isNull()) {
         painter.drawPixmap(0, 0, scaledBackground);
+    }
+
+    if (!scaledOverlay.isNull()){
+        painter.drawPixmap(0, 0, scaledOverlay);
     }
 
     int side = qMin(width(), height());

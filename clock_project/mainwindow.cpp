@@ -61,3 +61,11 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
+
+void MainWindow::on_BGchange1_triggered(){
+    softWatch->setBackgroundImage(":/images/background.jpg");
+}
+
+void MainWindow::on_BGchange2_triggered(){
+    softWatch->setBackgroundImage(":/images/bg2.jpg");
+}

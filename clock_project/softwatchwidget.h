@@ -17,6 +17,7 @@ class SoftWatchWidget : public QWidget
 public:
     explicit SoftWatchWidget(QWidget *parent = nullptr);
     void setDateTime(const QDateTime &dateTime);
+    void setBackgroundImage(const QString &resourcePath);
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -28,12 +29,15 @@ private:
                       const QColor &color, double phase);
     double interpolateRadius(double angleDeg) const;
     void updateBackground();
+    void updateOverlay();
 
     QDateTime m_dateTime;
     QMap<int, double> dialAngles;
     QMap<int, double> dialRadii;
     QPixmap background;
     QPixmap scaledBackground;
+    QPixmap overlay;
+    QPixmap scaledOverlay;
 };
 
 #endif // SOFTWATCHWIDGET_H

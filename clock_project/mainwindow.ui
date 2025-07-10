@@ -35,14 +35,22 @@
     </property>
     <addaction name="helpAction"/>
    </widget>
-   <widget class="QMenu" name="menu123">
+   <widget class="QMenu" name="mainMenu">
     <property name="title">
-     <string>123</string>
+     <string>Главная</string>
     </property>
+    <widget class="QMenu" name="bgMenu_2">
+     <property name="title">
+      <string>Фон</string>
+     </property>
+     <addaction name="BGchange1"/>
+     <addaction name="BGchange2"/>
+    </widget>
+    <addaction name="bgMenu_2"/>
    </widget>
    <addaction name="timeMenu"/>
    <addaction name="helpMenu"/>
-   <addaction name="menu123"/>
+   <addaction name="mainMenu"/>
   </widget>
   <action name="setTimeAction">
    <property name="text">
@@ -52,6 +60,16 @@
   <action name="helpAction">
    <property name="text">
     <string>О программе</string>
+   </property>
+  </action>
+  <action name="BGchange1">
+   <property name="text">
+    <string>Дали</string>
+   </property>
+  </action>
+  <action name="BGchange2">
+   <property name="text">
+    <string>Второй</string>
    </property>
   </action>
  </widget>
