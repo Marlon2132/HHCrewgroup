@@ -69,3 +69,15 @@ void MainWindow::on_BGchange1_triggered(){
 void MainWindow::on_BGchange2_triggered(){
     softWatch->setBackgroundImage(":/images/bg2.jpg");
 }
+
+void MainWindow::on_BGchange3_triggered(){
+    softWatch->setBackgroundImage(":/images/bg3.jpg");
+}
+
+void MainWindow::on_BGchange4_triggered(){
+    softWatch->setBackgroundImage(":/images/bg4.jpg");
+}
+
+void MainWindow::on_BGchange5_triggered(){
+    softWatch->setBackgroundImage(":/images/bg5.jpg");
+}
