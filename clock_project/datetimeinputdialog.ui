@@ -508,17 +508,24 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
-     <item>
-      <widget class="QLineEdit" name="numericInput"/>
-     </item>
-     <item>
-      <widget class="QPushButton" name="currentTimeBtn">
-       <property name="text">
-        <string>Сейчас</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <item>
+        <widget class="QDateEdit" name="dateEdit">
+            <property name="calendarPopup">
+                <bool>true</bool>
+            </property>
+        </widget>
+    </item>
+    <item>
+        <widget class="QTimeEdit" name="timeEdit"/>
+    </item>
+    <item>
+        <widget class="QPushButton" name="currentTimeBtn">
+            <property name="text">
+                <string>Сейчас</string>
+            </property>
+        </widget>
+    </item>
+</layout>
    </item>
    <item>
     <widget class="QLabel" name="wordsLabel">

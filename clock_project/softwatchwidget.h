@@ -1,3 +1,4 @@
+// softwatchwidget.h
 #ifndef SOFTWATCHWIDGET_H
 #define SOFTWATCHWIDGET_H
 
@@ -19,6 +20,7 @@ public:
     void setDateTime(const QDateTime &dateTime);
     void setBackgroundImage(const QString &resourcePath);
 
+
 protected:
     void paintEvent(QPaintEvent *event) override;
     void resizeEvent(QResizeEvent *event) override;
@@ -36,6 +38,8 @@ private:
     double getDialAngle(double fraction) const;
 
     QDateTime m_dateTime;
+    bool m_manualMode = false;                      // режим ручной установки времени
+
     QMap<int, double> dialAngles;
     QMap<int, double> dialRadii;
     QPixmap background;
@@ -46,4 +50,4 @@ private:
     QVector<double> dialAnglesForMinutes;
 };
 
-#endif
+#endif // SOFTWATCHWIDGET_H
