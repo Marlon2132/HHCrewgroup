@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     ui->setupUi(this);
     ui->gridLayout->addWidget(paintel, 0, 0);
-    this->setWindowTitle("БИОРИТМЫ | HHCrewgroupSIA");
+    this->setWindowTitle("БИОРИТМЫ | HHCrewgroup123");
     ui->physBiorythmName->setStyleSheet("color: rgb(255, 0, 0)");
     ui->psychoBiorythmName->setStyleSheet("color: rgb(0, 0, 255)");
     ui->intellBiorythmName->setStyleSheet("color: rgb(0, 255, 0)");
