@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
+    ui->phys->setStyleSheet("color: rgb(255, 0, 0)");
+    ui->psyc->setStyleSheet("color: rgb(0, 0, 255)");
+    ui->intell->setStyleSheet("color: rgb(0, 255, 0)");
+
     ui->birthDateEdit->setDate(QDate::currentDate());
     ui->calcDateEdit ->setDate(QDate::currentDate());
 

@@ -3,7 +3,12 @@
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
-   <rect><x>0</x><y>0</y><width>800</width><height>600</height></rect>
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
   </property>
   <property name="windowTitle">
    <string>Клиент биоритмов</string>
@@ -12,30 +17,168 @@
    <layout class="QVBoxLayout" name="verticalLayout">
     <item>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0"><widget class="QLabel" name="label"><property name="text"><string>IP сервера:</string></property></widget></item>
-      <item row="0" column="1"><widget class="QLineEdit" name="ipLineEdit"><property name="text"><string>10.160.73.255</string></property></widget></item>
-      <item row="0" column="2"><widget class="QLabel" name="label_2"><property name="text"><string>Порт:</string></property></widget></item>
-      <item row="0" column="3"><widget class="QSpinBox" name="portSpinBox"><property name="minimum"><number>1</number></property><property name="maximum"><number>65535</number></property><property name="value"><number>12345</number></property></widget></item>
-      <item row="0" column="4"><widget class="QPushButton" name="requestButton"><property name="text"><string>Запросить</string></property></widget></item>
-      <item row="1" column="0"><widget class="QLabel" name="label_3"><property name="text"><string>ФИО:</string></property></widget></item>
-      <item row="1" column="1" colspan="4"><widget class="QLineEdit" name="nameEdit"/></item>
-      <item row="2" column="0"><widget class="QLabel" name="label_4"><property name="text"><string>Дата рождения:</string></property></widget></item>
-      <item row="2" column="1"><widget class="QDateEdit" name="birthDateEdit"/></item>
-      <item row="2" column="2"><widget class="QLabel" name="label_5"><property name="text"><string>Дата расчета:</string></property></widget></item>
-      <item row="2" column="3" colspan="2"><widget class="QDateEdit" name="calcDateEdit"/></item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>IP сервера:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="ipLineEdit">
+        <property name="text">
+         <string>10.160.73.255</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Порт:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QSpinBox" name="portSpinBox">
+        <property name="minimum">
+         <number>1</number>
+        </property>
+        <property name="maximum">
+         <number>65535</number>
+        </property>
+        <property name="value">
+         <number>12345</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QPushButton" name="requestButton">
+        <property name="text">
+         <string>Запросить</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>ФИО:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Дата рождения:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QDateEdit" name="birthDateEdit"/>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Дата расчета:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3" colspan="2">
+       <widget class="QDateEdit" name="calcDateEdit"/>
+      </item>
+      <item row="1" column="1" colspan="4">
+       <widget class="QLineEdit" name="nameEdit"/>
+      </item>
      </layout>
     </item>
     <item>
      <widget class="painter" name="painter" native="true">
-      <property name="minimumSize"><size><width>0</width><height>300</height></size></property>
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>300</height>
+       </size>
+      </property>
      </widget>
     </item>
     <item>
-     <widget class="QTextEdit" name="statusTEdit">
-      <property name="minimumSize"><size><width>0</width><height>200</height></size></property>
-      <property name="readOnly"><bool>true</bool></property>
-      <property name="placeholderText"><string>Готово к работе</string></property>
-     </widget>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="1" column="0" rowspan="3">
+       <widget class="QTextEdit" name="statusTEdit">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>200</height>
+         </size>
+        </property>
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>Готово к работе</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QLabel" name="psycLabel">
+        <property name="minimumSize">
+         <size>
+          <width>88</width>
+          <height>64</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QLabel" name="intellLabel">
+        <property name="minimumSize">
+         <size>
+          <width>88</width>
+          <height>64</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLabel" name="phys">
+        <property name="text">
+         <string>Физиологический биоритм: </string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="psyc">
+        <property name="text">
+         <string>Психологический биоритм:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLabel" name="intell">
+        <property name="text">
+         <string>Интеллектуальный биоритм:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="physLabel">
+        <property name="minimumSize">
+         <size>
+          <width>88</width>
+          <height>64</height>
+         </size>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
