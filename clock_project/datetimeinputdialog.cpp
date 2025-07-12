@@ -4,10 +4,6 @@
 #include "datetimevalidator.h"
 #include "datetimeconverter.h"
 #include <QMessageBox>
-#include <QDateTime>
-#include <QVBoxLayout>
-#include <QCalendarWidget>
-#include <QTimeEdit>
 
 DateTimeInputDialog::DateTimeInputDialog(InputType type, QWidget *parent)
     : QDialog(parent)
@@ -16,59 +12,34 @@ DateTimeInputDialog::DateTimeInputDialog(InputType type, QWidget *parent)
 {
     ui->setupUi(this);
 
-    QDateTime current = QDateTime::currentDateTime();
-    QString exampleWords = DateTimeConverter::convertToWords(current);
+    // Подписи и состояния кнопок
+    ui->errorLabel->hide();
+    ui->acceptButton->setEnabled(false);
+    ui->modeTab->setCurrentIndex(inputType == Numeric ? 0 : 1);
 
-    // Настройка существующих виджетов из .ui
-    ui->dateEdit->setDate(current.date());
-    ui->dateEdit->setCalendarPopup(true);
-    ui->dateEdit->setDisplayFormat("dd.MM.yyyy");
+    // Подставляем текущее время
+    QDateTime now = QDateTime::currentDateTime();
+    ui->currentTimeLabel->setText("Текущее время: " + now.toString("dd.MM.yyyy HH:mm:ss"));
 
-    ui->timeEdit->setTime(current.time());
-    ui->timeEdit->setDisplayFormat("HH:mm:ss");
+    // Numeric-вкладка
+    connect(ui->currentTimeButton, &QPushButton::clicked, this, [=](){
+        QDateTime c = QDateTime::currentDateTime();
+        ui->dateEdit->setDate(c.date());
+        ui->timeEdit->setTime(c.time());
+    });
+    connect(ui->dateEdit, &QDateEdit::dateChanged, this, &DateTimeInputDialog::onConvertClicked);
+    connect(ui->timeEdit, &QTimeEdit::timeChanged, this, &DateTimeInputDialog::onConvertClicked);
 
-    if (inputType == Numeric) {
-        setWindowTitle("Числовой ввод даты/времени");
-        ui->wordInput->hide();
-        ui->wordLabel->hide();
-        ui->numericOutput->hide();
-        ui->numericLabel->hide();
-        ui->convertButton->setText("Преобразовать в слова");
+    // Word-вкладка
+    connect(ui->wordInput, &QTextEdit::textChanged, this, &DateTimeInputDialog::onConvertClicked);
 
-        connect(ui->convertButton, &QPushButton::clicked,
-                this, &DateTimeInputDialog::onConvertClicked);
-        connect(ui->dateEdit, &QDateEdit::dateChanged,
-                this, [this](const QDate &d){
-                    dateTime.setDate(d);
-                    emit dateTimeChanged(dateTime);
-                    onConvertClicked();
-                });
-        connect(ui->timeEdit, &QTimeEdit::timeChanged,
-                this, [this](const QTime &t){
-                    dateTime.setTime(t);
-                    emit dateTimeChanged(dateTime);
-                    onConvertClicked();
-                });
-    }
-    else {
-        setWindowTitle("Словесный ввод даты/времени");
-        ui->numericOutput->hide();
-        ui->numericLabel->hide();
-        ui->wordsOutput->hide();
-        ui->wordsLabel->hide();
-        ui->wordInput->setPlaceholderText("Пример: " + exampleWords);
-        ui->wordInput->setPlainText(exampleWords);
-        ui->convertButton->setText("Преобразовать в дату/время");
-        connect(ui->convertButton, &QPushButton::clicked,
-                this, &DateTimeInputDialog::onConvertClicked);
-        ui->dateEdit->hide();
-        ui->timeEdit->hide();
-    }
+    // Общие кнопки
+    connect(ui->convertButton, &QPushButton::clicked, this, &DateTimeInputDialog::onConvertClicked);
+    connect(ui->acceptButton, &QPushButton::clicked, this, &DateTimeInputDialog::onAcceptClicked);
+    connect(ui->cancelButton, &QPushButton::clicked, this, &QDialog::reject);
 
-    connect(ui->acceptButton, &QPushButton::clicked,
-            this, &DateTimeInputDialog::onAcceptClicked);
-    connect(ui->cancelButton, &QPushButton::clicked,
-            this, &QDialog::reject);
+    // Первый прогон валидации
+    onConvertClicked();
 }
 
 DateTimeInputDialog::~DateTimeInputDialog()
@@ -78,26 +49,68 @@ DateTimeInputDialog::~DateTimeInputDialog()
 
 void DateTimeInputDialog::onConvertClicked()
 {
-    if (inputType == Numeric) {
-        QString words = DateTimeConverter::convertToWords(dateTime);
-        ui->wordsOutput->setText(words);
-    } else {
-        if (DateTimeValidator::validateWordFormat(ui->wordInput->toPlainText())) {
-            QDateTime dt = QDateTime::currentDateTime(); // заглушка
-            ui->numericOutput->setText(dt.toString("dd.MM.yyyy HH:mm:ss"));
-            emit dateTimeChanged(dt);
+    ui->errorLabel->hide();
+    bool ok = false;
+
+    if (ui->modeTab->currentIndex() == 0) { // Numeric-вкладка
+        QDate d = ui->dateEdit->date();
+        QTime t = ui->timeEdit->time();
+        QDateTime dt(d, t);
+        dateTime = dt;
+        QString words = DateTimeConverter::convertToWords(dt);
+        ui->numericOutput->setText(words);
+        ok = dt.isValid();
+    }
+    else { // Word-вкладка
+        QString txt = ui->wordInput->toPlainText();
+        if (DateTimeValidator::validateWordFormat(txt)) {
+            // здесь можно заменить на полноценный парсинг
+            QDateTime dt = QDateTime::fromString(
+                DateTimeConverter::convertToNumeric(txt),
+                "dd.MM.yyyy HH:mm:ss");
+            dateTime = dt;
+            ui->wordsOutput->setText(dt.toString("dd.MM.yyyy HH:mm:ss"));
+            ok = dt.isValid();
         } else {
-            ui->numericOutput->setText("Неверный формат!");
+            ui->errorLabel->setText("Неверный словесный формат");
+            ui->errorLabel->show();
         }
     }
+
+    ui->acceptButton->setEnabled(ok);
 }
+
 void DateTimeInputDialog::onAcceptClicked()
 {
-    if (inputType == Numeric && !dateTime.isValid()) {
-        QMessageBox::warning(this,
-                             tr("Ошибка"),
-                             tr("Введите корректные дату и время"));
+    if (!dateTime.isValid()) {
+        QMessageBox::warning(this, tr("Ошибка"), tr("Введите корректное время"));
         return;
     }
     accept();
 }
+
+
+void DateTimeInputDialog::setupValidators() {
+    connect(ui->wordInput, &QTextEdit::textChanged,
+            this, &DateTimeInputDialog::validateAll);
+    connect(ui->dateEdit, &QDateEdit::dateChanged,
+            this, &DateTimeInputDialog::validateAll);
+    connect(ui->timeEdit, &QTimeEdit::timeChanged,
+            this, &DateTimeInputDialog::validateAll);
+}
+
+void DateTimeInputDialog::validateAll() {
+    bool ok = true;
+    if (inputType == Numeric) {
+        QDateTime dt;
+        ok = DateTimeValidator::validateNumericFormat(
+            ui->numericOutput->text(), dt);
+    } else {
+        ok = DateTimeValidator::validateWordFormat(
+            ui->wordInput->toPlainText());
+    }
+    ui->acceptButton->setEnabled(ok);
+    ui->errorLabel->setVisible(!ok);
+    if (!ok) ui->errorLabel->setText("Неверный формат");
+}
+

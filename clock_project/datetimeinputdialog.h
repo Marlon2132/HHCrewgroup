@@ -33,6 +33,8 @@ signals:
 private slots:
     void onConvertClicked();
     void onAcceptClicked();
+    void setupValidators();
+    void validateAll();
 
 private:
     Ui::DateTimeInputDialog *ui;

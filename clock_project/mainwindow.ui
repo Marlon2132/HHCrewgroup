@@ -3,55 +3,94 @@
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
-   <rect><x>0</x><y>0</y><width>800</width><height>600</height></rect>
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>800</width>
+    <height>600</height>
+   </rect>
   </property>
-  <property name="windowTitle"><string>MainWindow</string></property>
-
+  <property name="windowTitle">
+   <string>Часы Дали</string>
+  </property>
   <widget class="QWidget" name="centralwidget"/>
-
   <widget class="QMenuBar" name="menubar">
-   <property name="geometry"><rect><x>0</x><y>0</y><width>800</width><height>25</height></rect></property>
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>800</width>
+     <height>25</height>
+    </rect>
+   </property>
    <widget class="QMenu" name="timeMenu">
-    <property name="title"><string>Время</string></property>
-    <addaction name="setDateAction"/>
-    <addaction name="setTimeAction"/>
-   </widget>
-   <widget class="QMenu" name="helpMenu">
-    <property name="title"><string>Помощь</string></property>
-    <addaction name="helpAction"/>
+    <property name="title">
+     <string>Время</string>
+    </property>
+    <addaction name="changeDateTimeAction"/>
    </widget>
    <widget class="QMenu" name="mainMenu">
-    <property name="title"><string>Главная</string></property>
-    <widget class="QMenu" name="bgMenu_2">
-     <property name="title"><string>Фон</string></property>
+    <property name="title">
+     <string>Главная</string>
+    </property>
+    <widget class="QMenu" name="bgMenu">
+     <property name="title">
+      <string>Фон</string>
+     </property>
      <addaction name="BGchange1"/>
      <addaction name="BGchange2"/>
      <addaction name="BGchange3"/>
      <addaction name="BGchange4"/>
      <addaction name="BGchange5"/>
     </widget>
-    <addaction name="bgMenu_2"/>
+    <addaction name="bgMenu"/>
+   </widget>
+   <widget class="QMenu" name="helpMenu">
+    <property name="title">
+     <string>Помощь</string>
+    </property>
+    <addaction name="helpAction"/>
    </widget>
    <addaction name="timeMenu"/>
    <addaction name="mainMenu"/>
    <addaction name="helpMenu"/>
   </widget>
 
-  <action name="setDateAction">
-   <property name="text"><string>Установить дату...</string></property>
-  </action>
-  <action name="setTimeAction">
-   <property name="text"><string>Установить время...</string></property>
+  <action name="changeDateTimeAction">
+   <property name="text">
+    <string>Изменить дату и время...</string>
+   </property>
   </action>
   <action name="helpAction">
-   <property name="text"><string>О программе</string></property>
+   <property name="text">
+    <string>О программе</string>
+   </property>
   </action>
-  <action name="BGchange1"><property name="text"><string>Дали</string></property></action>
-  <action name="BGchange2"><property name="text"><string>Дорога</string></property></action>
-  <action name="BGchange3"><property name="text"><string>Дом</string></property></action>
-  <action name="BGchange4"><property name="text"><string>Город</string></property></action>
-  <action name="BGchange5"><property name="text"><string>Пляж</string></property></action>
-
+  <action name="BGchange1">
+   <property name="text">
+    <string>Дали</string>
+   </property>
+  </action>
+  <action name="BGchange2">
+   <property name="text">
+    <string>Дорога</string>
+   </property>
+  </action>
+  <action name="BGchange3">
+   <property name="text">
+    <string>Дом</string>
+   </property>
+  </action>
+  <action name="BGchange4">
+   <property name="text">
+    <string>Город</string>
+   </property>
+  </action>
+  <action name="BGchange5">
+   <property name="text">
+    <string>Пляж</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

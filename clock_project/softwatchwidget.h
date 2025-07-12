@@ -19,7 +19,8 @@ public:
     explicit SoftWatchWidget(QWidget *parent = nullptr);
     void setDateTime(const QDateTime &dateTime);
     void setBackgroundImage(const QString &resourcePath);
-
+    bool isManualMode() const;
+    QDateTime currentDateTime() const;
 
 protected:
     void paintEvent(QPaintEvent *event) override;
@@ -38,8 +39,9 @@ private:
     double getDialAngle(double fraction) const;
 
     QDateTime m_dateTime;
-    bool m_manualMode = false;                      // режим ручной установки времени
-
+    QElapsedTimer   m_elapsedTimer;
+    QDateTime       m_manualBaseDateTime;
+    bool m_manualMode = false;                      // режим ручной установки времени  
     QMap<int, double> dialAngles;
     QMap<int, double> dialRadii;
     QPixmap background;

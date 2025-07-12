@@ -52,17 +52,23 @@ SoftWatchWidget::SoftWatchWidget(QWidget *parent) : QWidget(parent)
     m_timer->start(50);
 }
 
-void SoftWatchWidget::updateTime()
-{
-    if (!m_manualMode)
-        m_dateTime = QDateTime::currentDateTime();
-    update();
-}
-
 void SoftWatchWidget::setDateTime(const QDateTime &dateTime)
 {
     m_manualMode = true;
-    m_dateTime = dateTime;
+    m_manualBaseDateTime = dateTime;
+    m_elapsedTimer.restart();
+    update();
+}
+
+void SoftWatchWidget::updateTime()
+{
+    if (m_manualMode) {
+        // добавляем прошедшие милисекунды к установленному времени
+        qint64 ms = m_elapsedTimer.elapsed();
+        m_dateTime = m_manualBaseDateTime.addMSecs(ms);
+    } else {
+        m_dateTime = QDateTime::currentDateTime();
+    }
     update();
 }
 
@@ -243,4 +249,14 @@ void SoftWatchWidget::setBackgroundImage(const QString &resourcePath)
     background = pix;
     updateBackground();
     update();
+}
+
+bool SoftWatchWidget::isManualMode() const
+{
+    return m_manualMode;
+}
+
+QDateTime SoftWatchWidget::currentDateTime() const
+{
+    return m_dateTime;
 }

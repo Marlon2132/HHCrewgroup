@@ -6,6 +6,8 @@
 #include <QTimer>
 #include <QDateTime>
 #include "softwatchwidget.h"
+#include <QSettings>
+#include <QLabel>
 
 namespace Ui {
 class MainWindow;
@@ -20,8 +22,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_setDateAction_triggered();
-    void on_setTimeAction_triggered();
+    void on_changeDateTimeAction_triggered();
     void on_helpAction_triggered();
     void on_BGchange1_triggered();
     void on_BGchange2_triggered();
@@ -31,11 +32,14 @@ private slots:
     void updateTime();
 
 private:
+    void loadSettings();
+    void saveSettings();
     Ui::MainWindow *ui;
     SoftWatchWidget *softWatch;
     QTimer *timer;
     bool timerStopped = false;
     QDateTime m_dateTime;
+    QLabel *dateLabel;
 };
 
 #endif // MAINWINDOW_H
