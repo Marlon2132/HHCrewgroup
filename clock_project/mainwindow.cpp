@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     m_dateTime = QDateTime::currentDateTime();
     timer = new QTimer(this);
-    timer->start(1000);
+    timer->start(50);
     connect(timer, &QTimer::timeout, this, &MainWindow::updateTime);
     updateTime();
 

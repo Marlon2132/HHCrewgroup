@@ -210,7 +210,7 @@ void SoftWatchWidget::drawSoftHand(QPainter *painter, double angleRad,
     path.moveTo(0,0);
     path.cubicTo(cp1, cp2, endP);
 
-    // тени
+
     painter->save();
     auto drawShadow = [&](double dx, double dy, QColor col, double w){
         QPainterPath pp = path;
@@ -225,7 +225,7 @@ void SoftWatchWidget::drawSoftHand(QPainter *painter, double angleRad,
     drawShadow(0.5,0.5, QColor(0,0,0,40), width+1);
     painter->restore();
 
-    // сама стрелка
+
     QLinearGradient grad(0,0,endP.x(), endP.y());
     grad.setColorAt(0, color.lighter(140));
     grad.setColorAt(1, color.darker(140));
